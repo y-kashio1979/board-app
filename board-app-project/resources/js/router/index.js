@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Regist from '../users/regist.vue'
 
 import Login from '../users/Login.vue'
+import ThreadShow from '../threads/ThreadShow.vue'
 
 const routes = [
     {
@@ -10,9 +11,14 @@ const routes = [
         component: Login
     },
     {
-       path:'/register',
-       name:'Regist',
-       component: Regist
+        path:'/register',
+        name:'Regist',
+        component: Regist
+    },
+    {
+        path:'/threads/:id',
+        name:'ThreadShow',
+        component: ThreadShow
     }
 ]
 
