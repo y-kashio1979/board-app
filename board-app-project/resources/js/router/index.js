@@ -3,6 +3,7 @@ import Regist from '../users/regist.vue'
 
 import Login from '../users/Login.vue'
 import ThreadShow from '../threads/ThreadShow.vue'
+import CreateThread from '../threads/CreateThread.vue'
 
 const routes = [
     {
@@ -19,6 +20,11 @@ const routes = [
         path:'/threads/:id',
         name:'ThreadShow',
         component: ThreadShow
+    },
+    {
+        path:'/threads/create',
+        name:'CreateThread',
+        component: CreateThread
     }
 ]
 
