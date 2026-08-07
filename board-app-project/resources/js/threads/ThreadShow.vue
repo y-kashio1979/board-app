@@ -100,7 +100,6 @@ const showComment = (comment) => {
             <p>{{ formatDate(comment.created_at) }}</p>
             <div class="comment-content">
                 {{
-                    // コメントの全文を表示するか、省略表示するかを判定
                     showComment(comment)
                 }}
             </div>
@@ -116,6 +115,7 @@ const showComment = (comment) => {
         </div>
     </div>
 
+    <!-- TODO : ログイン情報の受け渡しの変数の決定 -->
     <PostComment v-if="isLoggedIn" :threadId="thread.id" :userId="currentUser.id" />
     <div v-else>
         <p>コメントを投稿するにはログインが必要です。</p>
