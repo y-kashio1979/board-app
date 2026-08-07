@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
     text: {
@@ -37,17 +37,17 @@ const getShortText = () => {
     return shortText;
 };
 
-// テキストを表示する関数（全文表示か省略表示かを判定）
-const showText = () => {
+// テキストを表示する算出プロパティ（全文表示か省略表示かを判定）
+const showText = computed(() => {
     return showAll.value || getTextLength() <= props.maxLength
         ? props.text
         : getShortText();
-};
+});
 </script>
 
 <template>
     <div class="text-content">
-        {{ showText() }}
+        {{ showText }}
     </div>
 
     <!-- 省略表示の切り替え -->
