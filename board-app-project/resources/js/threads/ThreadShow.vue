@@ -1,44 +1,88 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
+import PostComment from "../components/PostComment.vue";
+import ReadMoreText from "../components/ReadMoreText.vue";
+
+const route = useRoute();
+const thread = ref(null);
+const comments = ref([]);
+const router = useRouter();
+const errorMessage = ref(""); // エラーメッセージを格納する変数
+const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
+// TODO : ログイン情報の呼び出し
+
+const fetchThread = async () => {
+    try {
+        const response = await axios.get(`/api/threads/${route.params.id}`);
+        thread.value = response.data;
+        comments.value = response.data.comments;
+    } catch (error) {
+        errorMessage.value = "スレッドの取得に失敗しました。";
+    }
+};
+
+onMounted(() => {
+    fetchThread();
+});
+
+const goBack = () => {
+    router.push({ name: "ThreadList" });
+};
+
+// 日付を日本語形式でフォーマットする関数
+const formatDate = (date) => {
+    return new Date(date).toLocaleString("ja-JP");
+};
+</script>
 
 <template>
     <h2>スレッド詳細</h2>
 
-    <!-- TODO : 一覧に戻る処理作成 -->
-    <button>一覧に戻る</button>
+    <p v-if="errorMessage" class="error">
+        {{ errorMessage }}
+    </p>
 
-    <!-- TODO: スレッドのタイトル,投稿者,投稿日の表示 -->
-    <div id="thread-info">
-        <h3>タイトル</h3>
-        <h4>投稿者:</h4>
-        <h4>投稿日:</h4>
+    <button @click="goBack">一覧に戻る</button>
+
+    <div v-if="thread">
+        <div id="thread-info">
+            <h3>{{ thread.title }}</h3>
+            <!-- TODO : スレッド投稿者と投稿者が同じ場合にユーザー名を青色表示 -->
+            <h4>投稿者: {{ thread.user.name }}</h4>
+            <h4>投稿日: {{ formatDate(thread.created_at) }}</h4>
+        </div>
+
+        <div class="thread-content">{{ thread.body }}</div>
     </div>
 
-    <!-- TODO: 本文の表示 -->
-    <p>スレッド本文</p>
-
+    <h3>コメント一覧</h3>
     <div id="comments-list">
-        <h3>コメント一覧</h3>
-        <!-- TODO: コメントの投稿者,投稿日,コメント本文の表示 -->
         <div v-for="comment in comments" :key="comment.id">
-            <p>投稿者</p>
-            <p>投稿日</p>
-            <!-- TODO : コメント長文時の省略表示の実装 -->
-            <div class="comment-content">コメント本文</div>
+            <p>{{ comment.user.name }}</p>
+            <p>{{ formatDate(comment.created_at) }}</p>
+            <ReadMoreText :text="comment.body" :maxLength="maxpreviewLength" />
         </div>
     </div>
 
-    <div id="comment-form">
-        <label>コメント投稿</label>
-        <textarea></textarea>
-        <!-- TODO : コメントのエラーメッセージ表示 -->
-        <p>エラーメッセージ</p>
-        <!-- TODO : コメント投稿処理の実装 -->
-        <button>投稿</button>
+    <!-- TODO : ログイン情報の受け渡しの変数の決定 -->
+    <PostComment v-if="isLoggedIn" :threadId="thread.id" :userId="currentUser.id" />
+    <div v-else>
+        <p>コメントを投稿するにはログインが必要です。</p>
+        <router-link to="/login">ログイン</router-link>
     </div>
 </template>
 
 <style scoped>
-#comment-content {
+/* TODO : Tailwind CSSに変換する */
+.thread-content {
     white-space: pre-wrap;
+}
+
+#comments-list {
+    max-height: 400px;
+    overflow-y: auto;
 }
 </style>
