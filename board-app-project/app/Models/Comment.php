@@ -4,13 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Threads extends Model
+class Comment extends Model
 {
     protected $fillable = [
         'user_id',
-        'title',
+        'thread_id',
         'body',
-        'view_count',
     ];
 
     public function user()
@@ -18,8 +17,8 @@ class Threads extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function comments()
+    public function thread()
     {
-        return $this->hasMany(Comments::class);
+        return $this->belongsTo(Thread::class);
     }
 }
