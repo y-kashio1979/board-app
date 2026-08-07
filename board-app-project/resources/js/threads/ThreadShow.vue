@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
@@ -11,6 +11,7 @@ const comments = ref([]);
 const router = useRouter();
 const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
+// TODO : ログイン情報の呼び出し
 
 const fetchThread = async () => {
     try {
@@ -18,7 +19,7 @@ const fetchThread = async () => {
         thread.value = response.data;
         comments.value = response.data.comments.map((comment) => ({
             ...comment,
-            expanded: false, // コメントの展開状態を管理するプロパティを追加
+            showAll: false, // コメントの展開状態を管理するプロパティを追加
         }));
     } catch (error) {
         errorMessage.value = "スレッドの取得に失敗しました。";
@@ -62,6 +63,14 @@ const getShortComment = (commentBody) => {
     shortComment += "..."; // 省略記号を追加
     return shortComment;
 };
+
+// コメントを表示する関数（全文表示か省略表示かを判定）
+const showComment = (comment) => {
+    return comment.showAll ||
+        getCommentLength(comment.body) <= maxpreviewLength
+        ? comment.body
+        : getShortComment(comment.body);
+};
 </script>
 
 <template>
@@ -92,10 +101,7 @@ const getShortComment = (commentBody) => {
             <div class="comment-content">
                 {{
                     // コメントの全文を表示するか、省略表示するかを判定
-                    comment.expanded ||
-                    getCommentLength(comment.body) <= maxpreviewLength
-                        ? comment.body
-                        : getShortComment(comment.body)
+                    showComment(comment)
                 }}
             </div>
 
@@ -103,14 +109,18 @@ const getShortComment = (commentBody) => {
             <span
                 v-if="getCommentLength(comment.body) > maxpreviewLength"
                 class="toggle-comment"
-                @click="comment.expanded = !comment.expanded"
+                @click="comment.showAll = !comment.showAll"
             >
-                {{ comment.expanded ? "閉じる" : "全体を表示" }}
+                {{ comment.showAll ? "閉じる" : "全体を表示" }}
             </span>
         </div>
     </div>
 
-    <PostComment />
+    <PostComment v-if="isLoggedIn" :threadId="thread.id" :userId="currentUser.id" />
+    <div v-else>
+        <p>コメントを投稿するにはログインが必要です。</p>
+        <router-link to="/login">ログイン</router-link>
+    </div>
 </template>
 
 <style scoped>
