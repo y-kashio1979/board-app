@@ -14,6 +14,7 @@ const validate = () => {
 
     if (!trimedCommentBody) {
         error.value = "コメント本文は必須です";
+        return;
     }
 
     if (trimedCommentBody.length > COMMENT_BODY_CHAR_LIMIT) {
@@ -26,10 +27,6 @@ const createComment = () => {
     validate();
     if (error.value) return;
     // TODO: api通信を実装
-};
-
-const isLogin = () => {
-    // TODO : ログイン確認処理を書く
 };
 </script>
 
