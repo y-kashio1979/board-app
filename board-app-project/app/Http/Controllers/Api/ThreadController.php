@@ -21,7 +21,27 @@ class ThreadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate(
+            [
+                'title' => 'required|max:200',
+                'body' => 'required|max:200'
+            ],
+            [
+                'require' => ':attributeは必須です',
+                'max' => ':attributeは:max文字以下にしてください'
+            ],
+            [
+                'title' => 'スレッドタイトル',
+                'body' => 'スレッド本文'
+            ]
+        );
+
+        Thread::create([
+            'user_id' => $request->user_id,
+            'title' => $validated['title'],
+            'body' => $validated['body'],
+            'view_count' => 0,
+        ]);
     }
 
     /**
