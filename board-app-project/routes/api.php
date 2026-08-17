@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ThreadController;
+use App\Http\Controllers\Api\AuthController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -10,3 +11,9 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::post('/threads/create', [ThreadController::class, 'store']);
+
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('auth/me', [AuthController::class, 'me']);
+});
