@@ -36,11 +36,15 @@ class ThreadController extends Controller
             ]
         );
 
-        Thread::create([
-            'user_id' => $request->user_id,
+        $thread = Thread::create([
+            'user_id' => 1,
             'title' => $validated['title'],
             'body' => $validated['body'],
             'view_count' => 0,
+        ]);
+
+        return response()->json([
+            'threadId' => $thread->id,
         ]);
     }
 

@@ -1,13 +1,14 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 //制限文字数
 const THREAD_TITLE_CHAR_LIMIT = 200;
 const THREAD_BODY_CHAR_LIMIT = 200;
 
-// TODO: ユーザーIDを取得する処理の追加　今は仮で１としている
-const userId = 1;
+const router = useRouter();
+
 const threadTitle = ref("");
 const threadBody = ref("");
 
@@ -15,6 +16,7 @@ const threadBody = ref("");
 const initialErrors = {
     title: "",
     body: "",
+    api: "",
 };
 
 //エラーメッセージ保持
@@ -25,7 +27,6 @@ const makeThread = async () => {
     if (!validate()) return;
 
     const threadData = {
-        user_id: userId,
         title: threadTitle.value,
         body: threadBody.value,
     };
@@ -34,6 +35,7 @@ const makeThread = async () => {
     try {
         const res = await axios.post("/api/threads/create", threadData);
         resetInputs();
+        moveThreadDetail(res.data["threadId"]);
     } catch (e) {
         if (e.response?.status === 422) {
             const apiValidateErrors = e.response?.data?.errors;
@@ -44,7 +46,7 @@ const makeThread = async () => {
                 });
             }
         } else {
-            errors.value.title = "通信エラーのためスレッドを作成できませんでした";
+            errors.value.api = "通信エラーのためスレッドを作成できませんでした";
         }
     }
 };
@@ -109,10 +111,24 @@ const resetInputs = () => {
     threadTitle.value = "";
     threadBody.value = "";
 };
+
+//作成したスレッドに移動
+const moveThreadDetail = (threadId) => {
+    router.push({
+        name: "ThreadShow",
+        params: {
+            id: threadId,
+        },
+    });
+};
 </script>
 
 <template>
     <h2>スレッド作成</h2>
+
+    <!-- エラーメッセージ　API -->
+    <p v-if="errors.api">{{ errors.api }}</p>
+
     <div>
         <label for="threadTitle">タイトル</label>
         <input type="text" id="threadTitle" v-model="threadTitle" />
