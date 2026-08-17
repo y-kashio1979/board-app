@@ -1,9 +1,13 @@
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 //制限文字数
 const THREAD_TITLE_CHAR_LIMIT = 200;
 const THREAD_BODY_CHAR_LIMIT = 200;
+
+const router = useRouter();
 
 const threadTitle = ref("");
 const threadBody = ref("");
@@ -12,42 +16,87 @@ const threadBody = ref("");
 const initialErrors = {
     title: "",
     body: "",
+    api: "",
 };
 
 //エラーメッセージ保持
 const errors = ref({ ...initialErrors });
 
 //スレッド作成
-const makeThread = () => {
-    validate();
-    if (hasError) return;
-    // TODO:apiに追加する処理を書く
+const makeThread = async () => {
+    if (!validate()) return;
+
+    const threadData = {
+        title: threadTitle.value,
+        body: threadBody.value,
+    };
+
+    //テーブルへ追加する
+    try {
+        const res = await axios.post("/api/threads/create", threadData);
+        resetInputs();
+        moveThreadDetail(res.data["threadId"]);
+    } catch (e) {
+        if (e.response?.status === 422) {
+            const apiValidateErrors = e.response?.data?.errors;
+
+            if (apiValidateErrors) {
+                Object.keys(apiValidateErrors).forEach((key) => {
+                    errors.value[key] = apiValidateErrors[key][0];
+                });
+            }
+        } else {
+            errors.value.api = "通信エラーのためスレッドを作成できませんでした";
+        }
+    }
 };
 
 //バリデーション
 const validate = () => {
     resetErrors();
 
+    validateTitle();
+    validateBody();
+
+    if (hasError()) return false;
+    return true;
+};
+
+//スレッドタイトルバリデーション
+const validateTitle = () => {
     const trimedTitle = threadTitle.value.trim();
-    const body = threadBody.value;
 
     if (!trimedTitle) {
         errors.value.title = "タイトルは必須です";
+        return false;
     }
 
     if (trimedTitle.length > THREAD_TITLE_CHAR_LIMIT) {
-        errors.value.title = "タイトルは200文字以内です";
+        errors.value.title = `タイトルは${THREAD_TITLE_CHAR_LIMIT}文字以内です`;
+        return false;
     }
 
-    if (!body) {
-        errors.value.body = "本文は必須です";
-    }
-
-    if (body.length > THREAD_BODY_CHAR_LIMIT) {
-        errors.value.body = "本文は200文字以内です";
-    }
+    return true;
 };
 
+//スレッド本文バリデーション
+const validateBody = () => {
+    const trimedBody = threadBody.value.trim();
+
+    if (!trimedBody) {
+        errors.value.body = "本文は必須です";
+        return false;
+    }
+
+    if (trimedBody.length > THREAD_BODY_CHAR_LIMIT) {
+        errors.value.body = `本文は${THREAD_BODY_CHAR_LIMIT}文字以内です`;
+        return false;
+    }
+
+    return true;
+};
+
+//エラー初期化
 const resetErrors = () => {
     errors.value = { ...initialErrors };
 };
@@ -57,13 +106,29 @@ const hasError = () => {
     return Object.values(errors.value).some(Boolean);
 };
 
-const isLogin = () => {
-    // TODO:ログインしているか確認処理実装
-}
+//入力内容初期化
+const resetInputs = () => {
+    threadTitle.value = "";
+    threadBody.value = "";
+};
+
+//作成したスレッドに移動
+const moveThreadDetail = (threadId) => {
+    router.push({
+        name: "ThreadShow",
+        params: {
+            id: threadId,
+        },
+    });
+};
 </script>
 
 <template>
     <h2>スレッド作成</h2>
+
+    <!-- エラーメッセージ　API -->
+    <p v-if="errors.api">{{ errors.api }}</p>
+
     <div>
         <label for="threadTitle">タイトル</label>
         <input type="text" id="threadTitle" v-model="threadTitle" />
