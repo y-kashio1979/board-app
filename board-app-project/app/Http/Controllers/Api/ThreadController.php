@@ -11,10 +11,28 @@ class ThreadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $keyword = $request->keyword;
+        $query = Thread::with('user')
+            ->withCount('comments');
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', '%' . $keyword . '%')
+                    ->orWhereHas('user', function ($userQuery) use ($keyword) {
+                        $userQuery->where('name', 'like', '%' . $keyword . '%');
+                    });
+            });
+        }
+
+        $threads = $query
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        return response()->json($threads);
     }
+
 
     /**
      * Store a newly created resource in storage.
