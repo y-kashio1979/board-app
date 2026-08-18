@@ -1,10 +1,9 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+const MAX_TITLE_LENGTH = 20;
 const data = reactive({
     threads: [],
     keyword: "",
-    searched: false
 });
 //ページ（現在のページ、総ページ数）
 const page = reactive({
@@ -12,7 +11,6 @@ const page = reactive({
     totalPage: 1,
 });
 const errorMessage = ref("");
-const router = useRouter();
 
 //共通化
 const getThreads = async (pageNumber = 1) => {
@@ -24,27 +22,28 @@ const getThreads = async (pageNumber = 1) => {
         page.currentPage = res.data.current_page;
         page.totalPage = res.data.last_page;
     } catch (error) {
-        console.log(error);
-        errorMessage.value = "スレッドの取得に失敗しました。";
+        if (data.threads.length === 0) {
+            errorMessage.value = "検索条件に一致するスレッドがありません";
+        } else {
+            console.log(error);
+            errorMessage.value = "スレッドの取得に失敗しました。";
+        }
     }
 };
 
 onMounted(() => {
     getThreads();
 });
-//スレッド詳細遷移
-function goDetail(threadId) {
-    router.push({ name: "ThreadShow", params: { id: threadId } });
-}
 
 //検索
 const search = () => {
-    data.searched = true;
     getThreads(page.currentPage);
 };
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
-    return title.length > 20 ? title.substring(0, 20) + "..." : title;
+    return title.length > MAX_TITLE_LENGTH
+        ? title.substring(0, MAX_TITLE_LENGTH) + "..."
+        : title;
 };
 //次のページ
 const nextPage = () => {
@@ -67,9 +66,6 @@ const previousPage = () => {
     <label for="serch">検索</label>
     <input type="text" id="serch" v-model="data.keyword" />
     <button @click="search">検索</button>
-    <p v-if="data.searched && data.threads.length === 0">
-        検索条件に一致するスレッドがありません
-    </p>
     <p>{{ errorMessage }}</p>
     <table>
         <thead>
@@ -81,13 +77,15 @@ const previousPage = () => {
                 <th>投稿日</th>
             </tr>
         </thead>
+
         <tbody>
-            <tr
-                @click="goDetail(thread.id)"
-                v-for="thread in data.threads"
-                :key="thread.id"
-            >
-                <td>{{ shortenTitle(thread.title) }}</td>
+            <tr v-for="thread in data.threads" :key="thread.id">
+                <td>
+                    <router-link
+                        :to="{ name: 'ThreadShow', params: { id: thread.id } }"
+                        >{{ shortenTitle(thread.title) }}</router-link
+                    >
+                </td>
                 <td>{{ thread.view_count }}</td>
                 <td>{{ thread.comments_count }}</td>
                 <td>{{ thread.user.name }}</td>
