@@ -9,6 +9,7 @@ const THREAD_BODY_CHAR_LIMIT = 200;
 
 const router = useRouter();
 
+//送るデータ　スレッドタイトル、本文
 const threadTitle = ref("");
 const threadBody = ref("");
 
@@ -45,6 +46,8 @@ const makeThread = async () => {
                     errors.value[key] = apiValidateErrors[key][0];
                 });
             }
+        } else if (e.response?.status === 401) {
+            errors.value.api = "スレッド作成するにはログインが必要です";
         } else {
             errors.value.api = "通信エラーのためスレッドを作成できませんでした";
         }

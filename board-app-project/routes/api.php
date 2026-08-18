@@ -11,7 +11,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/threads', [ThreadController::class, 'index']);
-Route::post('/threads/create', [ThreadController::class, 'store']);
 Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::put('/threads/{thread}/views', [ThreadController::class, 'countUpView']);
 
@@ -19,5 +18,6 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('/threads/create', [ThreadController::class, 'store']);
     Route::post('/threads/{thread}/posts', [CommentController::class, 'store']);
 });

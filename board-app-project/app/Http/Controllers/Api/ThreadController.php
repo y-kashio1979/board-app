@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Thread;
+use Illuminate\Support\Facades\Auth;
 
 class ThreadController extends Controller
 {
@@ -55,7 +56,7 @@ class ThreadController extends Controller
         );
 
         $thread = Thread::create([
-            'user_id' => 1,
+            'user_id' => Auth::user()->id,
             'title' => $validated['title'],
             'body' => $validated['body'],
             'view_count' => 0,
