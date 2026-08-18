@@ -54,52 +54,44 @@ const formatDate = (date) => {
         {{ errorMessage }}
     </p>
 
-    <div v-else>
-        <div v-show="thread">
-            <div id="thread-info">
-                <h3>{{ thread?.title }}</h3>
-                <!-- TODO : スレッド投稿者と投稿者が同じ場合にユーザー名を青色表示 -->
-                <h4>投稿者: {{ thread?.user?.name }}</h4>
-                <h4>
-                    投稿日:
-                    {{
-                        thread?.created_at ? formatDate(thread.created_at) : ""
-                    }}
-                </h4>
-            </div>
+    <div v-else-if="thread">
+        <div id="thread-info">
+            <h3>{{ thread.title }}</h3>
+            <!-- TODO : スレッド投稿者と投稿者が同じ場合にユーザー名を青色表示 -->
+            <h4>投稿者: {{ thread.user.name }}</h4>
+            <h4>
+                投稿日:
+                {{ formatDate(thread.created_at) }}
+            </h4>
+        </div>
 
-            <div class="thread-content">{{ thread?.body }}</div>
+        <div class="thread-content">{{ thread.body }}</div>
 
-            <h3>コメント一覧</h3>
-            <div id="comments-list">
-                <div v-for="comment in comments" :key="comment.id">
-                    <p>{{ comment?.user?.name }}</p>
-                    <p>
-                        {{
-                            comment?.created_at
-                                ? formatDate(comment.created_at)
-                                : ""
-                        }}
-                    </p>
-                    <ReadMoreText
-                        :text="comment?.body ?? ''"
-                        :maxLength="maxpreviewLength"
-                    />
-                </div>
+        <h3>コメント一覧</h3>
+        <div id="comments-list">
+            <div v-for="comment in comments" :key="comment.id">
+                <p>{{ comment.user.name }}</p>
+                <p>
+                    {{ formatDate(comment.created_at) }}
+                </p>
+                <ReadMoreText
+                    :text="comment.body"
+                    :maxLength="maxpreviewLength"
+                />
             </div>
+        </div>
 
-            <PostComment
-                v-if="AuthSotre.isLoggedIn"
-                :threadId="thread?.id"
-                @postedComment="reFetchThread"
-            />
-            <div v-else>
-                <p>コメントを投稿するにはログインが必要です。</p>
-                <router-link
-                    :to="{ name: 'Login', query: { redirect: route.fullPath } }"
-                    >ログイン</router-link
-                >
-            </div>
+        <PostComment
+            v-if="AuthSotre.isLoggedIn"
+            :threadId="thread.id"
+            @postedComment="reFetchThread"
+        />
+        <div v-else>
+            <p>コメントを投稿するにはログインが必要です。</p>
+            <router-link
+                :to="{ name: 'Login', query: { redirect: route.fullPath } }"
+                >ログイン</router-link
+            >
         </div>
     </div>
 </template>
