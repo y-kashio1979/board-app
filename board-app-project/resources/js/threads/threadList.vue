@@ -18,16 +18,17 @@ const getThreads = async (pageNumber = 1) => {
         const res = await axios.get(`/api/threads`, {
             params: { page: pageNumber, keyword: data.keyword },
         });
+        errorMessage.value = "";
         data.threads = res.data.data;
         page.currentPage = res.data.current_page;
         page.totalPage = res.data.last_page;
-    } catch (error) {
         if (data.threads.length === 0) {
             errorMessage.value = "検索条件に一致するスレッドがありません";
-        } else {
-            console.log(error);
-            errorMessage.value = "スレッドの取得に失敗しました。";
         }
+    } catch (error) {
+        errorMessage.value = "";
+        console.log(error);
+        errorMessage.value = "スレッドの取得に失敗しました。";
     }
 };
 
