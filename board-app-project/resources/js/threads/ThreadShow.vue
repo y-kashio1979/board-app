@@ -29,6 +29,12 @@ onMounted(() => {
     fetchThread();
 });
 
+const reFetchThread = (isPosted) => {
+    if (isPosted) {
+        fetchThread();
+    }
+};
+
 const goBack = () => {
     router.push({ name: "ThreadList" });
 };
@@ -42,40 +48,59 @@ const formatDate = (date) => {
 <template>
     <h2>スレッド詳細</h2>
 
+    <button @click="goBack">一覧に戻る</button>
+
     <p v-if="errorMessage" class="error">
         {{ errorMessage }}
     </p>
 
-    <button @click="goBack">一覧に戻る</button>
-
-    <div v-if="thread">
-        <div id="thread-info">
-            <h3>{{ thread.title }}</h3>
-            <!-- TODO : スレッド投稿者と投稿者が同じ場合にユーザー名を青色表示 -->
-            <h4>投稿者: {{ thread.user.name }}</h4>
-            <h4>投稿日: {{ formatDate(thread.created_at) }}</h4>
-        </div>
-
-        <div class="thread-content">{{ thread.body }}</div>
-    </div>
-
-    <h3>コメント一覧</h3>
-    <div id="comments-list">
-        <div v-for="comment in comments" :key="comment.id">
-            <p>{{ comment.user.name }}</p>
-            <p>{{ formatDate(comment.created_at) }}</p>
-            <ReadMoreText :text="comment.body" :maxLength="maxpreviewLength" />
-        </div>
-    </div>
-
-    <!-- thread が未取得(null)の状態で thread.id を参照するとエラーになるため表示条件に含める -->
-    <PostComment v-if="AuthSotre.isLoggedIn && thread" :threadId="thread.id" />
     <div v-else>
-        <p>コメントを投稿するにはログインが必要です。</p>
-        <router-link
-            :to="{ name: 'Login', query: { redirect: route.fullPath } }"
-            >ログイン</router-link
-        >
+        <div v-show="thread">
+            <div id="thread-info">
+                <h3>{{ thread?.title }}</h3>
+                <!-- TODO : スレッド投稿者と投稿者が同じ場合にユーザー名を青色表示 -->
+                <h4>投稿者: {{ thread?.user?.name }}</h4>
+                <h4>
+                    投稿日:
+                    {{
+                        thread?.created_at ? formatDate(thread.created_at) : ""
+                    }}
+                </h4>
+            </div>
+
+            <div class="thread-content">{{ thread?.body }}</div>
+
+            <h3>コメント一覧</h3>
+            <div id="comments-list">
+                <div v-for="comment in comments" :key="comment.id">
+                    <p>{{ comment?.user?.name }}</p>
+                    <p>
+                        {{
+                            comment?.created_at
+                                ? formatDate(comment.created_at)
+                                : ""
+                        }}
+                    </p>
+                    <ReadMoreText
+                        :text="comment?.body ?? ''"
+                        :maxLength="maxpreviewLength"
+                    />
+                </div>
+            </div>
+
+            <PostComment
+                v-if="AuthSotre.isLoggedIn"
+                :threadId="thread?.id"
+                @postedComment="reFetchThread"
+            />
+            <div v-else>
+                <p>コメントを投稿するにはログインが必要です。</p>
+                <router-link
+                    :to="{ name: 'Login', query: { redirect: route.fullPath } }"
+                    >ログイン</router-link
+                >
+            </div>
+        </div>
     </div>
 </template>
 
