@@ -18,6 +18,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/threads/create', [ThreadController::class, 'store']);
     Route::post('/threads/{thread}/posts', [CommentController::class, 'store']);
 });
