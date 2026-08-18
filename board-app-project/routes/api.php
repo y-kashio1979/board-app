@@ -14,6 +14,7 @@ Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::post('/threads/create', [ThreadController::class, 'store']);
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
