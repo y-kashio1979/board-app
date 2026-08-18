@@ -82,9 +82,9 @@ class ThreadController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Thread $thread)
     {
-        //
+        // 
     }
 
     /**
@@ -93,5 +93,10 @@ class ThreadController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function countUpView(Request $request, Thread $thread)
+    {
+        $thread->increment('view_count');
     }
 }
