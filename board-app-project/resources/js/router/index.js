@@ -44,16 +44,20 @@ const router = createRouter({
 })
 
 //各ルートのログイン必須確認
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
     const authStore = useAuthStore();
+
+    if (!authStore.isLoggedIn) {
+        await authStore.fetchUser();
+    }
 
     //ログインしていない場合、ログインページに飛ばす処理
     if (to.meta.requiresAuth && !authStore.isLoggedIn) {
-        return{
+        return {
             name: "Login",
             query: { redirect: to.fullPath },
-        }
+        };
     }
-})
+});
 
 export default router
