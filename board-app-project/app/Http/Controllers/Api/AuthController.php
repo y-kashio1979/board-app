@@ -36,6 +36,17 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
 
+    public function logout(Request $request) {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json([
+            'message' => 'ログアウトしました',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
