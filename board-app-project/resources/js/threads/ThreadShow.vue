@@ -25,8 +25,20 @@ const fetchThread = async () => {
     }
 };
 
-onMounted(() => {
-    fetchThread();
+const addThreadView = async () => {
+    try {
+        const response = await axios.put(`/api/threads/${route.params.id}`);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+onMounted( async () => {
+    await fetchThread();
+
+    if (!errorMessage.value && thread.value) {
+        addThreadView();
+    }
 });
 
 const reFetchThread = (isPosted) => {

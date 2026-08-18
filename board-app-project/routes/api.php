@@ -11,8 +11,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/threads', [ThreadController::class, 'index']);
-Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::post('/threads/create', [ThreadController::class, 'store']);
+Route::get('/threads/{thread}', [ThreadController::class, 'show']);
+Route::put('/threads/{thread}', [ThreadController::class, 'update']);
 
 Route::post('/login', [AuthController::class, 'login']);
 
