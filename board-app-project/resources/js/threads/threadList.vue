@@ -14,19 +14,15 @@ const errorMessage = ref("");
 
 //共通化
 const getThreads = async (pageNumber = 1) => {
+    errorMessage.value = "";
     try {
         const res = await axios.get(`/api/threads`, {
             params: { page: pageNumber, keyword: data.keyword },
         });
-        errorMessage.value = "";
         data.threads = res.data.data;
         page.currentPage = res.data.current_page;
         page.totalPage = res.data.last_page;
-        if (data.threads.length === 0) {
-            errorMessage.value = "検索条件に一致するスレッドがありません";
-        }
     } catch (error) {
-        errorMessage.value = "";
         console.log(error);
         errorMessage.value = "スレッドの取得に失敗しました。";
     }
@@ -80,6 +76,7 @@ const previousPage = () => {
         </thead>
 
         <tbody>
+            <tr  v-if="data.threads.length === 0"><td colspan="5">検索条件に一致するスレッドがありません</td></tr>
             <tr v-for="thread in data.threads" :key="thread.id">
                 <td>
                     <router-link
