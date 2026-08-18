@@ -84,7 +84,7 @@ class ThreadController extends Controller
      */
     public function update(Request $request, Thread $thread)
     {
-        $thread->increment('view_count');
+        // 
     }
 
     /**
@@ -93,5 +93,10 @@ class ThreadController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function countUpView(Request $request, Thread $thread)
+    {
+        $thread->increment('view_count');
     }
 }

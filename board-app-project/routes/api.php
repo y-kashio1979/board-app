@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
 Route::get('/threads', [ThreadController::class, 'index']);
 Route::post('/threads/create', [ThreadController::class, 'store']);
 Route::get('/threads/{thread}', [ThreadController::class, 'show']);
-Route::put('/threads/{thread}', [ThreadController::class, 'update']);
+Route::put('/threads/{thread}/views', [ThreadController::class, 'countUpView']);
 
 Route::post('/login', [AuthController::class, 'login']);
 

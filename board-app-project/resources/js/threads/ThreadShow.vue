@@ -27,7 +27,7 @@ const fetchThread = async () => {
 
 const addThreadView = async () => {
     try {
-        const response = await axios.put(`/api/threads/${route.params.id}`);
+        const response = await axios.put(`/api/threads/${route.params.id}/views`);
     } catch (error) {
         console.log(error);
     }
