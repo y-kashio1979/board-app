@@ -5,6 +5,7 @@ import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
 import PostComment from "../components/PostComment.vue";
 import ReadMoreText from "../components/ReadMoreText.vue";
+import { useAuthStore } from "../AuthStore.js";
 
 const route = useRoute();
 const thread = ref(null);
@@ -12,7 +13,7 @@ const comments = ref([]);
 const router = useRouter();
 const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
-// TODO : ログイン情報の呼び出し
+const AuthSotre = useAuthStore();
 
 const fetchThread = async () => {
     try {
@@ -67,11 +68,14 @@ const formatDate = (date) => {
         </div>
     </div>
 
-    <!-- TODO : ログイン情報の受け渡しの変数の決定 -->
-    <PostComment v-if="isLoggedIn" :threadId="thread.id" :userId="currentUser.id" />
+    <!-- thread が未取得(null)の状態で thread.id を参照するとエラーになるため表示条件に含める -->
+    <PostComment v-if="AuthSotre.isLoggedIn && thread" :threadId="thread.id" />
     <div v-else>
         <p>コメントを投稿するにはログインが必要です。</p>
-        <router-link to="/login">ログイン</router-link>
+        <router-link
+            :to="{ name: 'Login', query: { redirect: route.fullPath } }"
+            >ログイン</router-link
+        >
     </div>
 </template>
 

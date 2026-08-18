@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "../AuthStore";
 import axios from "axios";
 
@@ -17,6 +18,9 @@ const errors = reactive({
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
+
+const redirectPath = route.query.redirect || "/";
 
 const login = async () => {
     validate();
@@ -31,7 +35,7 @@ const login = async () => {
 
         authStore.login(data.user);
         
-        router.push("/");
+        router.push(redirectPath);
     } catch (error) {
         if (error.response?.status === 422) {
             errors.email = error.response.data.errors?.email?.[0];
