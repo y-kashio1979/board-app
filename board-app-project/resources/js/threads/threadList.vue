@@ -67,51 +67,71 @@ const formatDate = (date) => {
 </script>
 
 <template>
-    <h2>スレッド一覧</h2>
-    <label for="serch">検索</label>
-    <input type="text" id="serch" v-model="data.keyword" />
-    <button @click="search">検索</button>
-    <p>{{ errorMessage }}</p>
-    <table>
-        <thead>
-            <tr>
-                <th>タイトル</th>
-                <th>閲覧数</th>
-                <th>コメント数</th>
-                <th>投稿者</th>
-                <th>投稿日</th>
-            </tr>
-        </thead>
+    <div class="mx-auto max-w-6xl p-6">
+        <h2>スレッド一覧</h2>
+        <div class="card">
+            <div class="form-group mb-8">
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        id="serch"
+                        v-model="data.keyword"
+                        class="form-input max-w-md"
+                        placeholder="タイトルと投稿者名を入力"
+                    />
+                    <button @click="search" class="btn-primary">検索</button>
+                    <p class="error-text">{{ errorMessage }}</p>
+                </div>
+            </div>
+            <table class="table">
+                <thead class="table-header">
+                    <tr>
+                        <th class="w-[40%]">タイトル</th>
+                        <th class="w-[10%] text-center">閲覧数</th>
+                        <th class="w-[10%] text-center">コメント数</th>
+                        <th class="w-[15%] text-center">投稿者</th>
+                        <th class="w-[25%] text-center">投稿日</th>
+                    </tr>
+                </thead>
 
-        <tbody>
-            <tr v-if="data.threads.length === 0">
-                <td colspan="5">検索条件に一致するスレッドがありません</td>
-            </tr>
-            <tr v-for="thread in data.threads" :key="thread.id">
-                <td>
-                    <router-link
-                        :to="{
-                            name: 'ThreadShow',
-                            params: { id: thread.id },
-                            query: {
-                                keyword: data.keyword,
-                                page: page.currentPage,
-                            },
-                        }"
-                        >{{ shortenTitle(thread.title) }}</router-link
-                    >
-                </td>
-                <td>{{ thread.view_count }}</td>
-                <td>{{ thread.comments_count }}</td>
-                <td>{{ thread.user.name }}</td>
-                <td>{{ formatDate(thread.created_at) }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <button @click="previousPage">前へ</button>
-    <span>{{ page.currentPage }} / {{ page.totalPage }}</span>
-    <button @click="nextPage">次へ</button>
+                <tbody>
+                    <tr v-if="data.threads.length === 0" class="table-row">
+                        <td colspan="5" class="min-w-60">
+                            検索条件に一致するスレッドがありません
+                        </td>
+                    </tr>
+                    <tr v-for="thread in data.threads" :key="thread.id" class="table-row">
+                        <td>
+                            <router-link
+                                :to="{
+                                    name: 'ThreadShow',
+                                    params: { id: thread.id },
+                                    query: {
+                                        keyword: data.keyword,
+                                        page: page.currentPage,
+                                    },
+                                }"
+                                >{{ shortenTitle(thread.title) }}</router-link
+                            >
+                        </td>
+                        <td class="text-center">{{ thread.view_count }}</td>
+                        <td class="text-center">{{ thread.comments_count }}</td>
+                        <td class="text-center">{{ thread.user.name }}</td>
+                        <td class="text-center whitespace-nowrap">
+                            {{ formatDate(thread.created_at) }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-4 flex items-center justify-center gap-4">
+                <button @click="previousPage" class="btn-secondary">
+                    前へ
+                </button>
+                <span>{{ page.currentPage }} / {{ page.totalPage }}</span>
+                <button @click="nextPage" class="btn-primary">次へ</button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style></style>

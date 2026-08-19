@@ -88,4 +88,25 @@
     .error-box {
         @apply mb-4 rounded-button border border-danger bg-red-50 p-3 text-danger;
     }
+
+    .table {
+        @apply w-full;
+    }
+
+    .table-header th {
+        @apply border-b border-gray-300 bg-gray-100 px-4 py-3 text-left font-semibold;
+    }
+
+    .table-row td {
+        @apply border-b border-gray-200 px-4 py-3;
+    }
+
+    .table tr:hover {
+        @apply bg-gray-50;
+    }
+
+    .table a {
+        @apply text-primary hover:underline;
+    }
+
 }
