@@ -14,6 +14,9 @@ const router = useRouter();
 const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
 const AuthSotre = useAuthStore();
+const keyword = route.query.keyword;
+const page = route.query.page;
+// TODO : ログイン情報の呼び出し
 
 const fetchThread = async () => {
     try {
@@ -48,7 +51,7 @@ const reFetchThread = (isPosted) => {
 };
 
 const goBack = () => {
-    router.push({ name: "ThreadList" });
+    router.push({ name: "ThreadList", query: { keyword, page } });
 };
 
 // 日付を日本語形式でフォーマットする関数
