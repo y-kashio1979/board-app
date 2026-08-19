@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
@@ -124,6 +124,16 @@ const moveThreadDetail = (threadId) => {
         },
     });
 };
+
+//現在文字数　タイトル
+const titleLength = computed(() => {
+    return threadTitle.value.length;
+});
+
+//現在文字数　本文
+const bodyLength = computed(() => {
+    return threadBody.value.length;
+});
 </script>
 
 <template>
@@ -145,6 +155,9 @@ const moveThreadDetail = (threadId) => {
                     type="text"
                     class="form-input"
                 />
+                <p class="text-text-muted">
+                    {{ titleLength }} / {{ THREAD_TITLE_CHAR_LIMIT }}
+                </p>
 
                 <!-- エラーメッセージ　タイトル -->
                 <p v-if="errors.title" class="error-text">
@@ -161,6 +174,9 @@ const moveThreadDetail = (threadId) => {
                     rows="8"
                     class="form-input"
                 ></textarea>
+                <p class="text-text-muted">
+                    {{ bodyLength }} / {{ THREAD_BODY_CHAR_LIMIT }}
+                </p>
 
                 <!-- エラーメッセージ　本文 -->
                 <p v-if="errors.body" class="error-text">
