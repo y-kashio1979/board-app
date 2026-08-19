@@ -71,13 +71,13 @@ const formatDate = (date) => {
         <h2>スレッド一覧</h2>
         <div class="card">
             <div class="form-group mb-8">
-                <label for="serch" class="form-label">検索</label>
                 <div class="flex gap-2">
                     <input
                         type="text"
                         id="serch"
                         v-model="data.keyword"
                         class="form-input max-w-md"
+                        placeholder="タイトルと投稿者名を入力"
                     />
                     <button @click="search" class="btn-primary">検索</button>
                     <p class="error-text">{{ errorMessage }}</p>
