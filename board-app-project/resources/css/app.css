@@ -37,3 +37,55 @@
     --spacing-card: 24px;
     --spacing-item: 16px;
 }
+
+/* =========================
+   Base
+========================= */
+
+@layer base {
+    body {
+        @apply bg-background text-text;
+    }
+
+    h2 {
+        @apply text-2xl font-bold mb-section;
+    }
+}
+
+/* =========================
+   Components
+========================= */
+
+@layer components {
+    .form-group {
+        @apply mb-4;
+    }
+
+    .form-label {
+         @apply mb-2 block font-medium text-text;
+    }
+
+    .form-input {
+        @apply w-full rounded-button border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none;
+    }
+
+    .card {
+        @apply rounded-card bg-surface p-6 shadow;
+    }
+
+    .btn-primary {
+        @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80;
+    }
+
+    .btn-secondary {
+        @apply rounded-button bg-secondary px-6 py-2 font-medium text-white transition hover:opacity-80;
+    }
+
+    .error-text {
+        @apply mt-2 text-sm text-danger;
+    }
+
+    .error-box {
+        @apply mb-4 rounded-button border border-danger bg-red-50 p-3 text-danger;
+    }
+}
