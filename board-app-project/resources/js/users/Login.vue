@@ -88,7 +88,7 @@ const validate = () => {
 
     <hr />
     <p>
-        会員登録ををお済みでない方はこちら<router-link to="/register"
+        会員登録ををお済みでない方はこちら<router-link :to="{ name: 'Regist' }"
             >会員登録</router-link
         >
     </p>
