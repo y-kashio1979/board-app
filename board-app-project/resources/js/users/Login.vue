@@ -38,7 +38,7 @@ const login = async () => {
         const data = response.data;
 
         authStore.login(data.user);
-        
+
         router.push(redirectPath);
     } catch (error) {
         if (error.response?.status === 422) {
@@ -73,29 +73,55 @@ const validate = () => {
 </script>
 
 <template>
-    <h2>ログイン</h2>
+    <div
+        class="min-h-screen bg-background flex items-center justify-center p-8"
+    >
+        <div class="card w-full max-w-md">
+            <h2 class="text-center">
+                ログイン
+            </h2>
 
-    <label>メールアドレス</label>
-    <input type="email" v-model="loginForm.email" />
-    <p>{{ errors.email }}</p>
+            <div class="form-group">
+                <label class="form-label">メールアドレス</label>
+                <input
+                    type="email"
+                    v-model="loginForm.email"
+                    class="form-input"
+                />
+                <p class="error-text">{{ errors.email }}</p>
+            </div>
 
-    <label>パスワード</label>
-    <input type="password" v-model="loginForm.password" />
-    <p>{{ errors.password }}</p>
+            <div class="form-group">
+                <label class="form-label">パスワード</label>
+                <input
+                    type="password"
+                    v-model="loginForm.password"
+                    class="form-input" />
+                <p class="error-text">{{ errors.password }}</p>
+            </div>
 
-    <p>{{ errors.login }}</p>
-    <button @click="login">ログイン</button>
+            <p class="error-text mb-2">{{ errors.login }}</p>
+            <button
+                @click="login"
+                class="btn-primary w-full mt-4"
+            >
+                ログイン
+            </button>
 
-    <hr />
-    <p>
-        会員登録ををお済みでない方はこちら<router-link :to="{ name: 'Regist' }"
-            >会員登録</router-link
-        >
-    </p>
+            <hr class="my-6 border-secondary/20" />
+            <p class="text-center text-text-muted">
+                会員登録ををお済みでない方はこちら<router-link
+                    :to="{ name: 'Regist' }"
+                    class="text-primary font-medium ml-1"
+                    >会員登録</router-link
+                >
+            </p>
+        </div>
 
-    <loading-modal v-if="isLoading">
-        <p>ログイン中...</p>
-    </loading-modal>
+        <loading-modal v-if="isLoading">
+            <p>ログイン中...</p>
+        </loading-modal>
+    </div>
 </template>
 
 <style scoped></style>
