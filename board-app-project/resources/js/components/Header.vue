@@ -21,8 +21,7 @@ const logout = async () => {
     <h1>掲示板アプリ</h1>
 
     <!-- TODO: リンクとボタンの見た目を揃える -->
-    <!-- TODO: トップのリンクをルート名に変更 -->
-    <router-link :to="{ path: '/' }">トップ</router-link>
+    <router-link :to="{ name: 'Top' }">トップ</router-link>
     <router-link :to="{ name: 'ThreadList' }"> スレッド一覧 </router-link>
 
     <div v-if="authStore.isLoggedIn">
