@@ -77,7 +77,7 @@ const formatDate = (date) => {
                         id="serch"
                         v-model="data.keyword"
                         class="form-input max-w-md"
-                        placeholder="タイトルと投稿者名を入力"
+                        placeholder="タイトルまたは投稿者名を入力"
                     />
                     <button @click="search" class="btn-primary">検索</button>
                     <p class="error-text">{{ errorMessage }}</p>
