@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ThreadController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\UserController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -14,7 +16,7 @@ Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::post('/threads/create', [ThreadController::class, 'store']);
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/user/create', [UserController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);

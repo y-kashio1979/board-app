@@ -29,7 +29,7 @@ async function regist() {
     errorMessage.value = "";
     loading.value = true;
     try {
-        const response = await axios.post("/api/register", {
+        const response = await axios.post("/api/user/create", {
             name: data.name,
             email: data.email,
             password: data.password,
