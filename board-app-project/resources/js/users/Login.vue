@@ -1,9 +1,10 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "../AuthStore";
 import axios from "axios";
+import LoadingModal from "../components/modal/LoadingModal.vue";
 
 const loginForm = reactive({
     email: "",
@@ -21,10 +22,13 @@ const router = useRouter();
 const route = useRoute();
 
 const redirectPath = route.query.redirect || "/";
+const isLoading = ref(false);
 
 const login = async () => {
     validate();
     if (errors.email || errors.password) return;
+
+    isLoading.value = true;
 
     try {
         await axios.get("sanctum/csrf-cookie");
@@ -45,6 +49,8 @@ const login = async () => {
         } else {
             errors.login = "ログインエラーが発生しました";
         }
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -86,6 +92,10 @@ const validate = () => {
             >会員登録</router-link
         >
     </p>
+
+    <loading-modal v-if="isLoading">
+        <p>ログイン中...</p>
+    </loading-modal>
 </template>
 
 <style scoped></style>
