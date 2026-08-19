@@ -11,17 +11,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ],
-        [
-            'required' => ':attributeは必須です',
-            'email' => ':attributeの形式が正しくありません',
-        ],
-        [
-            'email' => 'メールアドレス',
-            'password' => 'パスワード',
-        ]);
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ],
+            [
+                'required' => ':attributeは必須です',
+                'email' => ':attributeの形式が正しくありません',
+            ],
+            [
+                'email' => 'メールアドレス',
+                'password' => 'パスワード',
+            ]);
 
         if (!Auth::attempt($credentials)) {
             return response()->json(['message' => 'メールアドレスまたはパスワードが正しくありません'], 401);
@@ -32,7 +32,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'ログインに成功しました', 'user' => Auth::user()]);
     }
 
-    public function me(Request $request) {
+    public function me(Request $request){
         return response()->json($request->user());
     }
 

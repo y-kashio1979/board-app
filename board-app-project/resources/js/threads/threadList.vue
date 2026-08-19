@@ -56,6 +56,10 @@ const previousPage = () => {
     }
     getThreads(page.currentPage - 1);
 };
+//日付日本語フォーマット
+const formatDate = (date) => {
+    return new Date(date).toLocaleString("ja-JP");
+};
 </script>
 
 <template>
@@ -76,7 +80,9 @@ const previousPage = () => {
         </thead>
 
         <tbody>
-            <tr  v-if="data.threads.length === 0"><td colspan="5">検索条件に一致するスレッドがありません</td></tr>
+            <tr v-if="data.threads.length === 0">
+                <td colspan="5">検索条件に一致するスレッドがありません</td>
+            </tr>
             <tr v-for="thread in data.threads" :key="thread.id">
                 <td>
                     <router-link
@@ -87,7 +93,7 @@ const previousPage = () => {
                 <td>{{ thread.view_count }}</td>
                 <td>{{ thread.comments_count }}</td>
                 <td>{{ thread.user.name }}</td>
-                <td>{{ thread.created_at }}</td>
+                <td>{{ formatDate(thread.created_at) }}</td>
             </tr>
         </tbody>
     </table>
