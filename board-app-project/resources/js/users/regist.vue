@@ -3,6 +3,8 @@ import { reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import LoadingModal from "../components/modal/LoadingModal.vue";
+import BaseModal from "../components/modal/BaseModal.vue";
+import InfoModal from "../components/modal/InfoModal.vue";
 
 const MAX_NAME_LENGTH = 20;
 const MIN_PASSWORD_LENGTH = 8;
@@ -22,6 +24,8 @@ const error = reactive({
 const router = useRouter();
 const errorMessage = ref("");
 const loading = ref(false);
+const isSuccess = ref(false);
+const infoMsg = ref("");
 //登録
 async function regist() {
     if (!validate()) {
@@ -36,8 +40,11 @@ async function regist() {
             password: data.password,
             password_confirmation: data.confirmPassword,
         });
-        router.push({ name: "Login" });
-        console.log(response.data.message);
+        infoMsg.value = response.data.message;
+        isSuccess.value = true;
+        setTimeout(() => {
+            router.push({ name: "Login" });
+        }, 2000);
     } catch (err) {
         console.log(err);
         if (err.response?.status === 422) {
@@ -115,4 +122,8 @@ function validate() {
     <LoadingModal v-if="loading">
         <p>登録中...</p>
     </LoadingModal>
+    <InfoModal v-if="isSuccess">
+        {{ infoMsg }}
+        <p>ログイン画面へ遷移します</p>
+    </InfoModal>
 </template>
