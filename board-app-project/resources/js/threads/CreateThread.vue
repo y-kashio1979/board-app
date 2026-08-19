@@ -127,29 +127,51 @@ const moveThreadDetail = (threadId) => {
 </script>
 
 <template>
-    <h2>スレッド作成</h2>
+    <div class="mx-auto max-w-2xl p-6">
+        <h2>スレッド作成</h2>
 
-    <!-- エラーメッセージ　API -->
-    <p v-if="errors.api">{{ errors.api }}</p>
+        <!-- エラーメッセージ　API -->
+        <p v-if="errors.api" class="error-box">
+            {{ errors.api }}
+        </p>
 
-    <div>
-        <label for="threadTitle">タイトル</label>
-        <input type="text" id="threadTitle" v-model="threadTitle" />
+        <div class="card">
+            <div class="form-group">
+                <label for="threadTitle" class="form-label"> タイトル </label>
 
-        <!-- エラーメッセージ -->
-        <p v-if="errors.title">{{ errors.title }}</p>
+                <input
+                    id="threadTitle"
+                    v-model="threadTitle"
+                    type="text"
+                    class="form-input"
+                />
 
-        <label for="threadBody">本文</label>
-        <textarea
-            name="threadBody"
-            id="threadBody"
-            v-model="threadBody"
-        ></textarea>
+                <!-- エラーメッセージ　タイトル -->
+                <p v-if="errors.title" class="error-text">
+                    {{ errors.title }}
+                </p>
+            </div>
 
-        <!-- エラーメッセージ -->
-        <p v-if="errors.body">{{ errors.body }}</p>
+            <div class="form-group">
+                <label for="threadBody" class="form-label"> 本文 </label>
 
-        <button @click="makeThread">投稿</button>
+                <textarea
+                    id="threadBody"
+                    v-model="threadBody"
+                    rows="8"
+                    class="form-input"
+                ></textarea>
+
+                <!-- エラーメッセージ　本文 -->
+                <p v-if="errors.body" class="error-text">
+                    {{ errors.body }}
+                </p>
+            </div>
+
+            <div class="flex justify-end">
+                <button @click="makeThread" class="btn-primary">投稿</button>
+            </div>
+        </div>
     </div>
 </template>
 
