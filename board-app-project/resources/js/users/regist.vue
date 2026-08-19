@@ -3,7 +3,6 @@ import { reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import LoadingModal from "../components/modal/LoadingModal.vue";
-import BaseModal from "../components/modal/BaseModal.vue";
 import InfoModal from "../components/modal/InfoModal.vue";
 
 const MAX_NAME_LENGTH = 20;
@@ -123,7 +122,7 @@ function validate() {
         <p>登録中...</p>
     </LoadingModal>
     <InfoModal v-if="isSuccess">
-        {{ infoMsg }}
+        <p>{{ infoMsg }}</p>
         <p>ログイン画面へ遷移します</p>
     </InfoModal>
 </template>
