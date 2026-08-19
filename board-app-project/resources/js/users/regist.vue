@@ -2,6 +2,7 @@
 import { reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import LoadingModal from "../components/modal/LoadingModal.vue";
 
 const MAX_NAME_LENGTH = 20;
 const MIN_PASSWORD_LENGTH = 8;
@@ -111,6 +112,7 @@ function validate() {
     />
     <p class="error">{{ error.confirmPassword }}</p>
     <button @click="regist" :disabled="loading">登録</button>
-    <!--TODO:仮のローディング-->
-    <p v-if="loading">登録中...</p>
+    <LoadingModal v-if="loading">
+        <p>登録中...</p>
+    </LoadingModal>
 </template>
