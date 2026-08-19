@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
 const MAX_TITLE_LENGTH = 20;
 const data = reactive({
     threads: [],
@@ -11,7 +12,7 @@ const page = reactive({
     totalPage: 1,
 });
 const errorMessage = ref("");
-
+const route = useRoute();
 //共通化
 const getThreads = async (pageNumber = 1) => {
     errorMessage.value = "";
@@ -29,11 +30,14 @@ const getThreads = async (pageNumber = 1) => {
 };
 
 onMounted(() => {
-    getThreads();
+    data.keyword = route.query.keyword ?? "";
+    page.currentPage = route.query.page ?? 1;
+    getThreads(page.currentPage);
 });
 
 //検索
 const search = () => {
+    page.currentPage = 1;
     getThreads(page.currentPage);
 };
 //タイトル字数超過時の省略
@@ -86,7 +90,14 @@ const formatDate = (date) => {
             <tr v-for="thread in data.threads" :key="thread.id">
                 <td>
                     <router-link
-                        :to="{ name: 'ThreadShow', params: { id: thread.id } }"
+                        :to="{
+                            name: 'ThreadShow',
+                            params: { id: thread.id },
+                            query: {
+                                keyword: data.keyword,
+                                page: page.currentPage,
+                            },
+                        }"
                         >{{ shortenTitle(thread.title) }}</router-link
                     >
                 </td>
