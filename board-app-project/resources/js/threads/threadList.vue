@@ -37,7 +37,8 @@ onMounted(() => {
 
 //検索
 const search = () => {
-    getThreads();
+    page.currentPage = 1;
+    getThreads(page.currentPage);
 };
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
