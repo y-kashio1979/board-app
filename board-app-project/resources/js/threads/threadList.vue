@@ -31,13 +31,13 @@ const getThreads = async (pageNumber = 1) => {
 
 onMounted(() => {
     data.keyword = route.query.keyword ?? "";
-    const pageNumber = route.query.page ?? 1;
-    getThreads(pageNumber);
+    page.currentPage = route.query.page ?? 1;
+    getThreads(page.currentPage);
 });
 
 //検索
 const search = () => {
-    getThreads(page.currentPage);
+    getThreads();
 };
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
