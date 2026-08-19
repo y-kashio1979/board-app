@@ -13,11 +13,14 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/threads', [ThreadController::class, 'index']);
 Route::get('/threads/{thread}', [ThreadController::class, 'show']);
-Route::post('/threads/create', [ThreadController::class, 'store']);
+Route::put('/threads/{thread}/views', [ThreadController::class, 'countUpView']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/user/create', [UserController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/threads/create', [ThreadController::class, 'store']);
+    Route::post('/threads/{thread}/posts', [CommentController::class, 'store']);
 });
