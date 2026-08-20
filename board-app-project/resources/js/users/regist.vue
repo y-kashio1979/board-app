@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, computed, watch } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import LoadingModal from "../components/modal/LoadingModal.vue";
@@ -26,6 +26,20 @@ const errorMessage = ref("");
 const loading = ref(false);
 const isSuccess = ref(false);
 const infoMsg = ref("");
+//リアルタイムバリデーション用のフラグ
+const validateFlag = reactive({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+});
+//リアルタイムバリデーション
+watch(
+    () => [data.name, data.email, data.password, data.confirmPassword],
+    () => {
+        validate();
+    },
+);
 //登録
 async function regist() {
     if (!validate()) {
@@ -65,39 +79,52 @@ function validate() {
     error.password = "";
     error.confirmPassword = "";
     let havingError = false;
-    if (!data.name) {
-        error.name = "ユーザー名は必須入力です";
-        havingError = true;
-    } else if (data.name.length > MAX_NAME_LENGTH) {
-        error.name = "ユーザー名は20文字以内で入力してください";
-        havingError = true;
-    }
-    if (!data.email) {
-        error.email = "メールアドレスは必須入力です";
-        havingError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-        error.email = "メールアドレスの形式が正しくありません";
-        havingError = true;
+    if (validateFlag.name) {
+        if (!data.name) {
+            error.name = "ユーザー名は必須入力です";
+            havingError = true;
+        } else if (data.name.length > MAX_NAME_LENGTH) {
+            error.name = "ユーザー名は20文字以内で入力してください";
+            havingError = true;
+        }
     }
 
-    if (!data.password) {
-        error.password = "パスワードは必須入力です";
-        havingError = true;
-    } else if (data.password.length < MIN_PASSWORD_LENGTH) {
-        error.password = "パスワードは8文字以上で入力してください";
-        havingError = true;
+    if (validateFlag.email) {
+        if (!data.email) {
+            error.email = "メールアドレスは必須入力です";
+            havingError = true;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            error.email = "メールアドレスの形式が正しくありません";
+            havingError = true;
+        }
     }
 
-    if (!data.confirmPassword) {
-        error.confirmPassword = "確認用パスワードは必須入力です";
-        havingError = true;
-    } else if (data.confirmPassword !== data.password) {
-        error.confirmPassword = "パスワードと一致しません";
-        havingError = true;
+    if (validateFlag.password) {
+        if (!data.password) {
+            error.password = "パスワードは必須入力です";
+            havingError = true;
+        } else if (data.password.length < MIN_PASSWORD_LENGTH) {
+            error.password = "パスワードは8文字以上で入力してください";
+            havingError = true;
+        }
+    }
+
+    if (validateFlag.confirmPassword) {
+        if (!data.confirmPassword) {
+            error.confirmPassword = "確認用パスワードは必須入力です";
+            havingError = true;
+        } else if (data.confirmPassword !== data.password) {
+            error.confirmPassword = "パスワードと一致しません";
+            havingError = true;
+        }
     }
 
     return !havingError;
 }
+//ユーザー名入力文字数数え上げ
+const userNameLength = computed(() => {
+    return data.name.length;
+});
 </script>
 <template>
     <div class="max-w-2xl mx-auto">
@@ -113,7 +140,9 @@ function validate() {
                     id="name"
                     v-model="data.name"
                     class="form-input w-full"
+                    @input="validateFlag.name = true; validate()"
                 />
+                <p>{{ userNameLength }} / {{ MAX_NAME_LENGTH }}</p>
                 <p class="error-text">{{ error.name }}</p>
                 <label for="email" class="form-label">メールアドレス</label>
                 <input
@@ -121,6 +150,7 @@ function validate() {
                     id="email"
                     v-model="data.email"
                     class="form-input w-full"
+                    @input="validateFlag.email = true; validate()"
                 />
                 <p class="error-text">{{ error.email }}</p>
                 <label for="password" class="form-label">パスワード</label>
@@ -129,6 +159,7 @@ function validate() {
                     id="password"
                     v-model="data.password"
                     class="form-input w-full"
+                    @input="validateFlag.password = true; validate()"
                 />
                 <p class="error-text">{{ error.password }}</p>
                 <label for="confirmPassword" class="form-label"
@@ -139,6 +170,7 @@ function validate() {
                     id="confirmPassword"
                     v-model="data.confirmPassword"
                     class="form-input w-full"
+                    @input="validateFlag.confirmPassword = true; validate()"
                 />
                 <p class="error-text">{{ error.confirmPassword }}</p>
                 <button @click="regist" :disabled="loading" class="btn-primary">
