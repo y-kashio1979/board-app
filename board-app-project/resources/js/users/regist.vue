@@ -144,14 +144,14 @@ function validate() {
                 <button @click="regist" :disabled="loading" class="btn-primary">
                     登録
                 </button>
-                <LoadingModal v-if="loading">
-                    <p>登録中...</p>
-                </LoadingModal>
-                <InfoModal v-if="isSuccess">
-                    <p>{{ infoMsg }}</p>
-                    <p>ログイン画面へ遷移します</p>
-                </InfoModal>
             </div>
         </div>
     </div>
+    <LoadingModal v-if="loading">
+        <p>登録中...</p>
+    </LoadingModal>
+    <InfoModal v-if="isSuccess">
+        <p>{{ infoMsg }}</p>
+        <p>ログイン画面へ遷移します</p>
+    </InfoModal>
 </template>

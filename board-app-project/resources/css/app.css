@@ -27,6 +27,7 @@
     /* 状態 */
     --color-success: #22c55e;  /*成功時など*/
     --color-danger: #ef4444;  /*エラーメッセージなど*/
+    --color-disabled: #808080;  /*ボタン非活性時*/
 
     /* ===== 丸角 ===== */
     --radius-button: 8px;  /*ボタン用丸角*/
@@ -75,6 +76,10 @@
 
     .btn-primary {
         @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80;
+    }
+
+    .btn-primary:disabled {
+        @apply bg-disabled opacity-80;
     }
 
     .btn-secondary {
