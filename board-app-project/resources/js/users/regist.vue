@@ -7,13 +7,14 @@ import InfoModal from "../components/modal/InfoModal.vue";
 
 const MAX_NAME_LENGTH = 20;
 const MIN_PASSWORD_LENGTH = 8;
+//入力用
 const data = reactive({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
 });
-
+//バリデーションエラー
 const error = reactive({
     name: "",
     email: "",
@@ -99,30 +100,58 @@ function validate() {
 }
 </script>
 <template>
-    <h2>会員登録</h2>
-    <p>{{ errorMessage }}</p>
-    <label for="name">ユーザー名</label>
-    <input type="text" id="name" v-model="data.name" />
-    <p class="error">{{ error.name }}</p>
-    <label for="email">メールアドレス</label>
-    <input type="text" id="email" v-model="data.email" />
-    <p class="error">{{ error.email }}</p>
-    <label for="password">パスワード</label>
-    <input type="password" id="password" v-model="data.password" />
-    <p class="error">{{ error.password }}</p>
-    <label for="confirmPassword">確認用パスワード</label>
-    <input
-        type="password"
-        id="confirmPassword"
-        v-model="data.confirmPassword"
-    />
-    <p class="error">{{ error.confirmPassword }}</p>
-    <button @click="regist" :disabled="loading">登録</button>
-    <LoadingModal v-if="loading">
-        <p>登録中...</p>
-    </LoadingModal>
-    <InfoModal v-if="isSuccess">
-        <p>{{ infoMsg }}</p>
-        <p>ログイン画面へ遷移します</p>
-    </InfoModal>
+    <div class="max-w-2xl mx-auto">
+        <h2>会員登録</h2>
+        <div v-if="errorMessage" class="error-box">
+            <p class="error-text">{{ errorMessage }}</p>
+        </div>
+        <div class="card">
+            <div class="max-w-md mx-auto">
+                <label for="name" class="form-label">ユーザー名</label>
+                <input
+                    type="text"
+                    id="name"
+                    v-model="data.name"
+                    class="form-input w-full"
+                />
+                <p class="error-text">{{ error.name }}</p>
+                <label for="email" class="form-label">メールアドレス</label>
+                <input
+                    type="text"
+                    id="email"
+                    v-model="data.email"
+                    class="form-input w-full"
+                />
+                <p class="error-text">{{ error.email }}</p>
+                <label for="password" class="form-label">パスワード</label>
+                <input
+                    type="password"
+                    id="password"
+                    v-model="data.password"
+                    class="form-input w-full"
+                />
+                <p class="error-text">{{ error.password }}</p>
+                <label for="confirmPassword" class="form-label"
+                    >確認用パスワード</label
+                >
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    v-model="data.confirmPassword"
+                    class="form-input w-full"
+                />
+                <p class="error-text">{{ error.confirmPassword }}</p>
+                <button @click="regist" :disabled="loading" class="btn-primary">
+                    登録
+                </button>
+                <LoadingModal v-if="loading">
+                    <p>登録中...</p>
+                </LoadingModal>
+                <InfoModal v-if="isSuccess">
+                    <p>{{ infoMsg }}</p>
+                    <p>ログイン画面へ遷移します</p>
+                </InfoModal>
+            </div>
+        </div>
+    </div>
 </template>
