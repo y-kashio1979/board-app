@@ -48,7 +48,9 @@ const makeThread = async () => {
         isLoading.value = false;
         isSuccess.value = true;
         resetInputs();
-        moveThreadDetail(res.data["threadId"]);
+        setTimeout(() => {
+            moveThreadDetail(res.data["threadId"]);
+        }, MOVE_CREATE_THREAD_TIME);
     } catch (e) {
         if (e.response?.status === 422) {
             const apiValidateErrors = e.response?.data?.errors;
@@ -131,14 +133,12 @@ const resetInputs = () => {
 
 //作成したスレッドに移動
 const moveThreadDetail = (threadId) => {
-    setTimeout(() => {
-        router.push({
-            name: "ThreadShow",
-            params: {
-                id: threadId,
-            },
-        });
-    }, MOVE_CREATE_THREAD_TIME);
+    router.push({
+        name: "ThreadShow",
+        params: {
+            id: threadId,
+        },
+    });
 };
 
 //現在文字数　タイトル
