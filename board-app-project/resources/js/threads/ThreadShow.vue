@@ -14,7 +14,6 @@ const router = useRouter();
 const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
 const AuthSotre = useAuthStore();
-// TODO : ログイン情報の呼び出し
 
 const fetchThread = async () => {
     try {
@@ -144,13 +143,4 @@ const formatDate = (date) => {
 </template>
 
 <style scoped>
-/* TODO : Tailwind CSSに変換する */
-.thread-content {
-    white-space: pre-wrap;
-}
-
-#comments-list {
-    max-height: 400px;
-    overflow-y: auto;
-}
 </style>
