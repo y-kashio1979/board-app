@@ -83,9 +83,9 @@ const formatDate = (date) => {
                 </h4>
 
                 <div
-                    class="mt-4 whitespace-pre-wrap border-t border-secondary/20 pt-3 text-text"
+                    class="mt-4 border-t border-secondary/20 pt-3"
                 >
-                    {{ thread.body }}
+                    <ReadMoreText :text="thread.body" :maxLength="maxpreviewLength" />
                 </div>
             </div>
 
