@@ -2,10 +2,14 @@
 import { computed, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import LoadingModal from "../components/modal/LoadingModal.vue";
+import InfoModal from "../components/modal/InfoModal.vue";
 
 //制限文字数
 const THREAD_TITLE_CHAR_LIMIT = 200;
 const THREAD_BODY_CHAR_LIMIT = 200;
+//作成したスレッドに移動するまでの時間(ms)
+const MOVE_CREATE_THREAD_TIME = 1000;
 
 const router = useRouter();
 
@@ -23,6 +27,11 @@ const initialErrors = {
 //エラーメッセージ保持
 const errors = ref({ ...initialErrors });
 
+//ロードフラグ
+const isLoading = ref(false);
+//作成完了フラグ
+const isSuccess = ref(false);
+
 //スレッド作成
 const makeThread = async () => {
     if (!validate()) return;
@@ -34,9 +43,14 @@ const makeThread = async () => {
 
     //テーブルへ追加する
     try {
+        isLoading.value = true;
         const res = await axios.post("/api/threads/create", threadData);
+        isLoading.value = false;
+        isSuccess.value = true;
         resetInputs();
-        moveThreadDetail(res.data["threadId"]);
+        setTimeout(() => {
+            moveThreadDetail(res.data["threadId"]);
+        }, MOVE_CREATE_THREAD_TIME);
     } catch (e) {
         if (e.response?.status === 422) {
             const apiValidateErrors = e.response?.data?.errors;
@@ -51,6 +65,8 @@ const makeThread = async () => {
         } else {
             errors.value.api = "通信エラーのためスレッドを作成できませんでした";
         }
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -189,6 +205,21 @@ const bodyLength = computed(() => {
             </div>
         </div>
     </div>
+
+    <!-- モーダル -->
+    <LoadingModal v-if="isLoading">
+        <div class="flex justify-left mb-item">
+            <h3 class="font-bold text-xl">LOADING</h3>
+        </div>
+        <p class="text-text">スレッド作成中...</p>
+    </LoadingModal>
+
+    <InfoModal v-if="isSuccess">
+        <div class="flex justify-left mb-item">
+            <h3 class="font-bold text-xl">INFORMATION</h3>
+        </div>
+        <p class="text-text">作成したスレッドに移動します</p>
+    </InfoModal>
 </template>
 
 <style scoped></style>
