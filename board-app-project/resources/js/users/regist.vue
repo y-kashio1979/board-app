@@ -26,19 +26,23 @@ const errorMessage = ref("");
 const loading = ref(false);
 const isSuccess = ref(false);
 const infoMsg = ref("");
-//リアルタイムバリデーション用のフラグ
-const validateFlag = reactive({
-    name: false,
-    email: false,
-    password: false,
-    confirmPassword: false,
-});
+
 //リアルタイムバリデーション
 watch(
-    () => [data.name, data.email, data.password, data.confirmPassword],
-    () => {
-        validate();
-    },
+    () => data.name,
+    () => validateName(),
+);
+watch(
+    () => data.email,
+    () => validateEmail(),
+);
+watch(
+    () => data.password,
+    () => validatePassword(),
+);
+watch(
+    () => data.confirmPassword,
+    () => validateConfirmPassword(),
 );
 //登録
 async function regist() {
@@ -74,53 +78,60 @@ async function regist() {
 }
 
 function validate() {
-    error.name = "";
-    error.email = "";
-    error.password = "";
-    error.confirmPassword = "";
-    let havingError = false;
-    if (validateFlag.name) {
-        if (!data.name) {
-            error.name = "ユーザー名は必須入力です";
-            havingError = true;
-        } else if (data.name.length > MAX_NAME_LENGTH) {
-            error.name = "ユーザー名は20文字以内で入力してください";
-            havingError = true;
-        }
-    }
-
-    if (validateFlag.email) {
-        if (!data.email) {
-            error.email = "メールアドレスは必須入力です";
-            havingError = true;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-            error.email = "メールアドレスの形式が正しくありません";
-            havingError = true;
-        }
-    }
-
-    if (validateFlag.password) {
-        if (!data.password) {
-            error.password = "パスワードは必須入力です";
-            havingError = true;
-        } else if (data.password.length < MIN_PASSWORD_LENGTH) {
-            error.password = "パスワードは8文字以上で入力してください";
-            havingError = true;
-        }
-    }
-
-    if (validateFlag.confirmPassword) {
-        if (!data.confirmPassword) {
-            error.confirmPassword = "確認用パスワードは必須入力です";
-            havingError = true;
-        } else if (data.confirmPassword !== data.password) {
-            error.confirmPassword = "パスワードと一致しません";
-            havingError = true;
-        }
-    }
-
-    return !havingError;
+    return;
+    validateName() &&
+        validateEmail() &&
+        validatePassword() &&
+        validateConfirmPassword();
 }
+
+const validateName = () => {
+    error.name = "";
+    if (!data.name) {
+        error.name = "ユーザー名は必須入力です";
+        return false;
+    } else if (data.name.length > MAX_NAME_LENGTH) {
+        error.name = "ユーザー名は20文字以内で入力してください";
+        return false;
+    }
+    return true;
+};
+
+const validateEmail = () => {
+    error.email = "";
+    if (!data.email) {
+        error.email = "メールアドレスは必須入力です";
+        return false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        error.email = "メールアドレスの形式が正しくありません";
+        return false;
+    }
+    return true;
+};
+
+const validatePassword = () => {
+    error.password = "";
+    if (!data.password) {
+        error.password = "パスワードは必須入力です";
+        return false;
+    } else if (data.password.length < MIN_PASSWORD_LENGTH) {
+        error.password = "パスワードは8文字以上で入力してください";
+        return false;
+    }
+    return true;
+};
+
+const validateConfirmPassword = () => {
+    error.confirmPassword = "";
+    if (!data.confirmPassword) {
+        error.confirmPassword = "確認用パスワードは必須入力です";
+        return false;
+    } else if (data.confirmPassword !== data.password) {
+        error.confirmPassword = "パスワードと一致しません";
+        return false;
+    }
+    return true;
+};
 //ユーザー名入力文字数数え上げ
 const userNameLength = computed(() => {
     return data.name.length;
@@ -140,7 +151,6 @@ const userNameLength = computed(() => {
                     id="name"
                     v-model="data.name"
                     class="form-input w-full"
-                    @input="validateFlag.name = true; validate()"
                 />
                 <p>{{ userNameLength }} / {{ MAX_NAME_LENGTH }}</p>
                 <p class="error-text">{{ error.name }}</p>
@@ -150,7 +160,6 @@ const userNameLength = computed(() => {
                     id="email"
                     v-model="data.email"
                     class="form-input w-full"
-                    @input="validateFlag.email = true; validate()"
                 />
                 <p class="error-text">{{ error.email }}</p>
                 <label for="password" class="form-label">パスワード</label>
@@ -159,7 +168,6 @@ const userNameLength = computed(() => {
                     id="password"
                     v-model="data.password"
                     class="form-input w-full"
-                    @input="validateFlag.password = true; validate()"
                 />
                 <p class="error-text">{{ error.password }}</p>
                 <label for="confirmPassword" class="form-label"
@@ -170,7 +178,6 @@ const userNameLength = computed(() => {
                     id="confirmPassword"
                     v-model="data.confirmPassword"
                     class="form-input w-full"
-                    @input="validateFlag.confirmPassword = true; validate()"
                 />
                 <p class="error-text">{{ error.confirmPassword }}</p>
                 <button @click="regist" :disabled="loading" class="btn-primary">
