@@ -7,6 +7,9 @@ const emit = defineEmits(["postedComment"]);
 
 //制限文字数
 const COMMENT_BODY_CHAR_LIMIT = 200;
+//投稿ボタンテキスト定数
+const POST_BTN_INITIAL_TEXT = "投稿";
+const POST_BTN_POSTED_TEXT = "投稿中...";
 
 //コメント本文
 const commentBody = ref("");
@@ -14,6 +17,9 @@ const commentBody = ref("");
 //エラーメッセージ保持
 const error = ref("");
 const apiError = ref("");
+
+//ロードフラグ
+const isLoading = ref(false);
 
 //バリデーション
 const validate = () => {
@@ -41,10 +47,13 @@ const createComment = async () => {
     };
 
     try {
+        isLoading.value = true;
+
         const res = await axios.post(
             `/api/threads/${props.threadId}/posts`,
             commentData,
         );
+
         resetInput();
         //投稿完了のイベントを渡す
         emit("postedComment", true);
@@ -58,6 +67,8 @@ const createComment = async () => {
         }
         //投稿できなかった場合のイベントを渡す
         emit("postedComment", false);
+    } finally {
+        isLoading.value = false;
     }
 };
 
@@ -75,6 +86,11 @@ const resetInput = () => {
 //現在文字数　コメント本文
 const bodyLength = computed(() => {
     return commentBody.value.length;
+});
+
+//投稿ボタンテキストを状況によって変更
+const postBtnTxt = computed(() => {
+    return isLoading.value ?  POST_BTN_POSTED_TEXT : POST_BTN_INITIAL_TEXT;
 });
 </script>
 
@@ -95,9 +111,10 @@ const bodyLength = computed(() => {
 
             <button
                 @click="createComment"
-                class="btn-primary self-end w-24 h-10"
+                :disabled="isLoading"
+                class="btn-primary self-end w-30 h-10"
             >
-                投稿
+                {{ postBtnTxt }}
             </button>
         </div>
 
