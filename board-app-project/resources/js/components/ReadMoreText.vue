@@ -46,14 +46,14 @@ const showText = computed(() => {
 </script>
 
 <template>
-    <div class="text-content">
+    <div class="text-text whitespace-pre-wrap">
         {{ showText }}
     </div>
 
     <!-- 省略表示の切り替え -->
     <span
         v-if="getTextLength() > props.maxLength"
-        class="toggle-text"
+        class="text-text-muted cursor-pointer underline"
         @click="showAll = !showAll"
     >
         {{ showAll ? "閉じる" : "全体を表示" }}
@@ -61,13 +61,4 @@ const showText = computed(() => {
 </template>
 
 <style scoped>
-.text-content {
-    white-space: pre-wrap;
-}
-
-.toggle-text {
-    color: blue;
-    cursor: pointer;
-    text-decoration: underline;
-}
 </style>
