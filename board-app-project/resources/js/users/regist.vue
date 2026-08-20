@@ -38,7 +38,12 @@ watch(
 );
 watch(
     () => data.password,
-    () => validatePassword(),
+    () => {
+        validatePassword();
+        if (data.confirmPassword) {
+            validateConfirmPassword();
+        }
+    },
 );
 watch(
     () => data.confirmPassword,
@@ -78,11 +83,12 @@ async function regist() {
 }
 
 function validate() {
-    return;
-    validateName() &&
+    return (
+        validateName() &&
         validateEmail() &&
         validatePassword() &&
-        validateConfirmPassword();
+        validateConfirmPassword()
+    );
 }
 
 const validateName = () => {
