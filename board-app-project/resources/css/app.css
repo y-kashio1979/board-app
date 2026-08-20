@@ -75,15 +75,11 @@
     }
 
     .btn-primary {
-        @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80;
-    }
-
-    .btn-primary:disabled {
-        @apply bg-disabled opacity-80;
+        @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled opacity-80;
     }
 
     .btn-secondary {
-        @apply rounded-button bg-secondary px-6 py-2 font-medium text-white transition hover:opacity-80;
+        @apply rounded-button bg-secondary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled opacity-80;
     }
 
     .error-text {
