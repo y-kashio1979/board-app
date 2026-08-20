@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, nextTick } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
@@ -14,6 +14,7 @@ const router = useRouter();
 const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
 const AuthSotre = useAuthStore();
+const commentScroll = ref(null);
 
 const fetchThread = async () => {
     try {
@@ -43,10 +44,40 @@ onMounted(async () => {
     }
 });
 
-const reFetchThread = (isPosted) => {
-    if (isPosted) {
-        fetchThread();
+const reFetchThread = async (isPosted) => {
+    if (!isPosted) {
+        return;
     }
+    await fetchThread();
+    // DOMの更新が終わるまで待つ
+    await nextTick();
+
+    if (!errorMessage.value && thread.value) {
+        scrollToBottom();
+    }
+};
+
+const scrollComment = (target) => {
+    const commentBox = commentScroll.value;
+
+    if (!commentBox) return;
+
+    commentBox.scrollTo({
+        top: target,
+        behavior: "smooth",
+    });
+};
+
+const scrollToTop = () => {
+    scrollComment(0);
+};
+
+const scrollToBottom = () => {
+    const commentBox = commentScroll.value;
+
+    if (!commentBox) return;
+
+    scrollComment(commentScroll.value.scrollHeight);
 };
 
 const goBack = () => {
@@ -73,24 +104,37 @@ const formatDate = (date) => {
 
         <div v-else-if="thread">
             <div class="card mb-4 pt-0 pb-3">
-                <h3 class="mb-2 text-xl font-bold pt-2 text-text">{{ thread.title }}</h3>
-                <h4 class="mb-2 text-text">
-                    投稿者: {{ thread.user.name }}
-                </h4>
+                <h3 class="mb-2 text-xl font-bold pt-2 text-text">
+                    {{ thread.title }}
+                </h3>
+                <h4 class="mb-2 text-text">投稿者: {{ thread.user.name }}</h4>
                 <h4 class="text-text text-sm">
                     投稿日:
                     {{ formatDate(thread.created_at) }}
                 </h4>
 
-                <div
-                    class="mt-4 border-t border-secondary/20 pt-3"
-                >
-                    <ReadMoreText :text="thread.body" :maxLength="maxpreviewLength" />
+                <div class="mt-4 border-t border-secondary/20 pt-3">
+                    <ReadMoreText
+                        :text="thread.body"
+                        :maxLength="maxpreviewLength"
+                    />
                 </div>
             </div>
 
-            <h3 class="mb-4 text-xl font-bold text-text">コメント一覧</h3>
-            <div class="card max-h-[300px] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-text">コメント一覧 ({{ comments.length }}件)</h3>
+
+                <div class="flex gap-2">
+                    <button class="btn-secondary text-sm" @click="scrollToTop">
+                        ↑
+                    </button>
+
+                    <button class="btn-primary text-sm" @click="scrollToBottom">
+                        ↓
+                    </button>
+                </div>
+            </div>
+            <div ref="commentScroll" class="card max-h-[300px] overflow-y-auto">
                 <div
                     v-for="comment in comments"
                     :key="comment.id"
@@ -142,5 +186,4 @@ const formatDate = (date) => {
     </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
