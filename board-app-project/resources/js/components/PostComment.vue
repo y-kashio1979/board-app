@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import axios from "axios";
 
 const props = defineProps(["threadId"]);
@@ -71,17 +71,41 @@ const resetErrors = () => {
 const resetInput = () => {
     commentBody.value = "";
 };
+
+//現在文字数　コメント本文
+const bodyLength = computed(() => {
+    return commentBody.value.length;
+});
 </script>
 
 <template>
-    <div id="comment-form">
-        <p v-if="apiError">{{ apiError }}</p>
+    <h3 class="mb-4 text-xl font-bold text-text">コメント投稿</h3>
 
-        <label for="comment-body">コメント投稿</label>
-        <textarea id="comment-body" v-model="commentBody"></textarea>
+    <div id="comment-form" class="card">
+        <p v-if="apiError" class="error-box">{{ apiError }}</p>
 
-        <p v-if="error">{{ error }}</p>
-        <button @click="createComment">投稿</button>
+        <div class="flex gap-item">
+            <textarea
+                id="comment-body"
+                v-model="commentBody"
+                rows="2"
+                class="form-input"
+                placeholder="コメントを入力して下さい"
+            ></textarea>
+
+            <button
+                @click="createComment"
+                class="btn-primary self-end w-24 h-10"
+            >
+                投稿
+            </button>
+        </div>
+
+        <p class="text-text-muted">
+            {{ bodyLength }} / {{ COMMENT_BODY_CHAR_LIMIT }}
+        </p>
+
+        <p v-if="error" class="error-text">{{ error }}</p>
     </div>
 </template>
 
