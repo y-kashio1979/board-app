@@ -72,12 +72,11 @@ class ThreadController extends Controller
      */
     public function show(Thread $thread)
     {
-        return response()->json($thread->load([
-            'user',
-            'comments' => function ($query) {
-                $query->orderby('created_at', 'asc')->with('user');
-            },
-        ]));
+        $thread->load('user');
+
+        $comments = $thread->comments()->with('user')->orderBy('created_at', 'desc')->paginate(20);
+    
+        return response()->json([ 'thread' => $thread, 'comments' => $comments ]);
     }
 
     /**
