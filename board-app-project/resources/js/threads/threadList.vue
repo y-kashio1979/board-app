@@ -29,33 +29,15 @@ const getThreads = async (pageNumber = 1) => {
     }
 };
 
-let timer = null;
 watch(
-    () => [data.keyword, page.currentPage],
-    ([keyword, currentPage], [oldKeyword, oldPage] = []) => {
-        //初期表示
-        if (oldKeyword === undefined) {
-            getThreads(currentPage);
-            return;
-        }
-        //キーワード検索、クリア時
-        if (keyword !== oldKeyword) {
-            clearTimeout(timer);
-            timer = setTimeout(() => {
-                page.currentPage = 1;
-                getThreads(page.currentPage);
-            }, 500);
-        }
-        //ページ更新時
-        if (currentPage !== oldPage) {
-            getThreads(currentPage);
-        }
+    () => page.currentPage,
+    () => {
+        getThreads(page.currentPage);
     },
     {
         immediate: true,
     },
 );
-
 
 onMounted(() => {
     data.keyword = route.query.keyword ?? "";
@@ -64,10 +46,13 @@ onMounted(() => {
 //検索
 const search = () => {
     page.currentPage = 1;
+    getThreads(page.currentPage);
 };
 //検索ワードクリア
 const wordClear = () => {
     data.keyword = "";
+    page.currentPage = 1;
+    getThreads(page.currentPage);
 };
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
