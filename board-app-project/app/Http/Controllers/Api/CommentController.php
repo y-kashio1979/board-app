@@ -36,11 +36,15 @@ class CommentController extends Controller
             ]
         );
 
-        Comment::create([
+        $comment = Comment::create([
             'user_id' => Auth::user()->id,
             'thread_id' => $threadId,
             'body' => $validated['body'],
         ]);
+
+        $comment->load('user');
+
+        return response()->json($comment);
     }
 
     /**
