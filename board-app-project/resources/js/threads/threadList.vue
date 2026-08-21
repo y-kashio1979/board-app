@@ -31,22 +31,40 @@ const getThreads = async (pageNumber = 1) => {
 
 let timer = null;
 watch(
-    () => data.keyword,
-    () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            page.currentPage = 1;
-            getThreads(page.currentPage);
-        }, 500);
+    () => [data.keyword, page.currentPage],
+    ([keyword, currentPage], [oldKeyword, oldPage] = []) => {
+        //初期表示
+        if (oldKeyword === undefined) {
+            getThreads(currentPage);
+            return;
+        }
+        //キーワード検索、クリア時
+        if (keyword !== oldKeyword) {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                page.currentPage = 1;
+                getThreads(page.currentPage);
+            }, 500);
+        }
+        //ページ更新時
+        if (currentPage !== oldPage) {
+            getThreads(currentPage);
+        }
+    },
+    {
+        immediate: true,
     },
 );
+
 
 onMounted(() => {
     data.keyword = route.query.keyword ?? "";
     page.currentPage = route.query.page ?? 1;
-    getThreads(page.currentPage);
 });
-
+//検索
+const search = () => {
+    page.currentPage = 1;
+};
 //検索ワードクリア
 const wordClear = () => {
     data.keyword = "";
@@ -62,14 +80,14 @@ const nextPage = () => {
     if (page.currentPage >= page.totalPage) {
         return;
     }
-    getThreads(page.currentPage + 1);
+    page.currentPage++;
 };
 //前のページ
 const previousPage = () => {
     if (page.currentPage <= 1) {
         return;
     }
-    getThreads(page.currentPage - 1);
+    page.currentPage--;
 };
 //日付日本語フォーマット
 const formatDate = (date) => {
@@ -90,7 +108,7 @@ const formatDate = (date) => {
                         class="form-input max-w-md"
                         placeholder="タイトルまたは投稿者名を入力"
                     />
-                    <button class="btn-primary">検索</button>
+                    <button @click="search" class="btn-primary">検索</button>
                     <button @click="wordClear" class="btn-secondary">
                         クリア
                     </button>
