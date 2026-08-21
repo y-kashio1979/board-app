@@ -123,4 +123,13 @@
     .section-group {
         @apply mb-section last:mb-0;
     }
+
+    /* ===== リンク系 ===== */
+    .nav-link {
+        @apply text-text transition hover:text-primary;
+    }
+
+    .nav-divider {
+        @apply border-r border-gray-300 pr-4;
+    }
 }
