@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 const MAX_TITLE_LENGTH = 20;
 const data = reactive({
@@ -29,14 +29,28 @@ const getThreads = async (pageNumber = 1) => {
     }
 };
 
+watch(
+    () => page.currentPage,
+    () => {
+        getThreads(page.currentPage);
+    },
+    {
+        immediate: true,
+    },
+);
+
 onMounted(() => {
     data.keyword = route.query.keyword ?? "";
     page.currentPage = route.query.page ?? 1;
-    getThreads(page.currentPage);
 });
-
 //検索
 const search = () => {
+    page.currentPage = 1;
+    getThreads(page.currentPage);
+};
+//検索ワードクリア
+const wordClear = () => {
+    data.keyword = "";
     page.currentPage = 1;
     getThreads(page.currentPage);
 };
@@ -51,14 +65,14 @@ const nextPage = () => {
     if (page.currentPage >= page.totalPage) {
         return;
     }
-    getThreads(page.currentPage + 1);
+    page.currentPage++;
 };
 //前のページ
 const previousPage = () => {
     if (page.currentPage <= 1) {
         return;
     }
-    getThreads(page.currentPage - 1);
+    page.currentPage--;
 };
 //日付日本語フォーマット
 const formatDate = (date) => {
@@ -80,6 +94,9 @@ const formatDate = (date) => {
                         placeholder="タイトルまたは投稿者名を入力"
                     />
                     <button @click="search" class="btn-primary">検索</button>
+                    <button @click="wordClear" class="btn-secondary">
+                        クリア
+                    </button>
                     <p class="error-text">{{ errorMessage }}</p>
                 </div>
             </div>
@@ -100,7 +117,11 @@ const formatDate = (date) => {
                             検索条件に一致するスレッドがありません
                         </td>
                     </tr>
-                    <tr v-for="thread in data.threads" :key="thread.id" class="table-row">
+                    <tr
+                        v-for="thread in data.threads"
+                        :key="thread.id"
+                        class="table-row"
+                    >
                         <td>
                             <router-link
                                 :to="{
