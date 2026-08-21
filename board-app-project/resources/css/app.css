@@ -58,6 +58,7 @@
 ========================= */
 
 @layer components {
+    /* ===== フォーム系 ===== */
     .form-group {
         @apply mb-4;
     }
@@ -70,18 +71,21 @@
         @apply w-full rounded-button border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none;
     }
 
+    /* ===== カード系 ===== */
     .card {
         @apply rounded-card bg-surface p-6 shadow;
     }
 
+    /* ===== ボタン系 ===== */
     .btn-primary {
-        @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled opacity-80;
+        @apply rounded-button bg-primary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled disabled:opacity-80;
     }
 
     .btn-secondary {
-        @apply rounded-button bg-secondary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled opacity-80;
+        @apply rounded-button bg-secondary px-6 py-2 font-medium text-white transition hover:opacity-80 disabled:bg-disabled disabled:opacity-80;
     }
 
+    /* ===== エラー系 ===== */
     .error-text {
         @apply mt-2 text-sm text-danger;
     }
@@ -90,6 +94,7 @@
         @apply mb-4 rounded-button border border-danger bg-red-50 p-3 text-danger;
     }
 
+    /* ===== テーブル系 ===== */
     .table {
         @apply w-full;
     }
@@ -110,4 +115,12 @@
         @apply text-primary hover:underline;
     }
 
+    /* ===== 本文系 ===== */
+    .section-title {
+        @apply mb-2 border-l-4 border-primary pl-2 text-base font-semibold text-text;
+    }
+
+    .section-group {
+        @apply mb-section last:mb-0;
+    }
 }
