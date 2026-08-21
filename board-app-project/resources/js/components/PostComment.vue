@@ -56,7 +56,7 @@ const createComment = async () => {
 
         resetInput();
         //投稿完了のイベントを渡す
-        emit("postedComment", true);
+        emit("postedComment", res.data);
     } catch (e) {
         if (e.response?.status === 422) {
             error.value = e.response?.data?.message;
@@ -66,7 +66,7 @@ const createComment = async () => {
             apiError.value = "通信エラーのため投稿できませんでした";
         }
         //投稿できなかった場合のイベントを渡す
-        emit("postedComment", false);
+        emit("postedComment", null);
     } finally {
         isLoading.value = false;
     }

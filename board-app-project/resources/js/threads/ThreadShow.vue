@@ -44,13 +44,20 @@ const fetchComments = async (page = 1) => {
         if (page === 1) {
             comments.value = response.data.data;
         } else {
-            comments.value.push(...response.data.data);
+            comments.value = Array.from(
+                new Map(
+                    [...comments.value, ...response.data.data].map(
+                        (comment) => [comment.id, comment],
+                    ),
+                ).values(),
+            );
         }
 
         currentPage.value = response.data.current_page;
         lastPage.value = response.data.last_page;
     } catch (error) {
         errorMessage.value = "コメントの取得に失敗しました。";
+        console.log(error);
     }
 };
 
@@ -83,15 +90,16 @@ onMounted(async () => {
     }
 });
 
-const reFetchThread = async (isPosted) => {
-    if (!isPosted) {
+const reFetchThread = async (newComment) => {
+    if (!newComment) {
         return;
     }
-    const loadedPage = currentPage.value;
+    comments.value.unshift(newComment);
+    // const loadedPage = currentPage.value;
 
-    for (let page = 1; page <= loadedPage; page++) {
-        fetchComments(page);
-    }
+    // for (let page = 1; page <= loadedPage; page++) {
+    //     fetchComments(page);
+    // }
 };
 
 const scrollComment = (target) => {
@@ -214,7 +222,7 @@ onUnmounted(() => {
                         >
                             {{ comment.user.name }}
                         </p>
-                        <p class="text-sm text-text-muted">
+                        <p ;class="text-sm text-text-muted">
                             {{ formatDate(comment.created_at) }}
                         </p>
                     </div>
