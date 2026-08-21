@@ -40,6 +40,12 @@ const search = () => {
     page.currentPage = 1;
     getThreads(page.currentPage);
 };
+//検索ワードクリア
+const wordClear = () => {
+    data.keyword = "";
+    page.currentPage = 1;
+    getThreads(page.currentPage);
+};
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
     return title.length > MAX_TITLE_LENGTH
@@ -80,6 +86,9 @@ const formatDate = (date) => {
                         placeholder="タイトルまたは投稿者名を入力"
                     />
                     <button @click="search" class="btn-primary">検索</button>
+                    <button @click="wordClear" class="btn-secondary">
+                        クリア
+                    </button>
                     <p class="error-text">{{ errorMessage }}</p>
                 </div>
             </div>
@@ -100,7 +109,11 @@ const formatDate = (date) => {
                             検索条件に一致するスレッドがありません
                         </td>
                     </tr>
-                    <tr v-for="thread in data.threads" :key="thread.id" class="table-row">
+                    <tr
+                        v-for="thread in data.threads"
+                        :key="thread.id"
+                        class="table-row"
+                    >
                         <td>
                             <router-link
                                 :to="{
