@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { useRouter } from "vue-router";
@@ -15,15 +15,47 @@ const errorMessage = ref(""); // エラーメッセージを格納する変数
 const maxpreviewLength = 50; // コメントのプレビュー表示の最大文字数
 const AuthSotre = useAuthStore();
 const commentScroll = ref(null);
+const currentPage = ref(1);
+const lastPage = ref(1);
+// 無限スクロールの監視対象の要素を取得
+const loadMoreTrigger = ref(null);
 
 const fetchThread = async () => {
     try {
         const response = await axios.get(`/api/threads/${route.params.id}`);
-        thread.value = response.data;
-        comments.value = response.data.comments;
+        thread.value = response.data.thread;
+        comments.value = response.data.comments.data;
+        currentPage.value = response.data.comments.current_page;
+        lastPage.value = response.data.comments.last_page;
     } catch (error) {
         errorMessage.value = "スレッドの取得に失敗しました。";
     }
+};
+
+const fetchComments = async (page) => {
+    try {
+        const response = await axios.get(
+            `/api/threads/${route.params.id}/comments`,
+            {
+                params: { page },
+            },
+        );
+
+        comments.value.push(...response.data.data);
+
+        currentPage.value = response.data.current_page;
+        lastPage.value = response.data.last_page;
+    } catch (error) {
+        errorMessage.value = "コメントの取得に失敗しました。";
+    }
+};
+
+const loadMoreComments = async () => {
+    if (currentPage.value >= lastPage.value) {
+        return;
+    }
+
+    await fetchComments(currentPage.value + 1);
 };
 
 const addThreadView = async () => {
@@ -39,6 +71,9 @@ const addThreadView = async () => {
 onMounted(async () => {
     await fetchThread();
 
+    await nextTick();
+    createObserver();
+
     if (!errorMessage.value && thread.value) {
         addThreadView();
     }
@@ -48,12 +83,10 @@ const reFetchThread = async (isPosted) => {
     if (!isPosted) {
         return;
     }
-    await fetchThread();
-    // DOMの更新が終わるまで待つ
-    await nextTick();
+    const loadedPage = currentPage.value;
 
-    if (!errorMessage.value && thread.value) {
-        scrollToBottom();
+    for (let page = 1; page <= loadedPage; page++) {
+        fetchComments(page);
     }
 };
 
@@ -72,14 +105,6 @@ const scrollToTop = () => {
     scrollComment(0);
 };
 
-const scrollToBottom = () => {
-    const commentBox = commentScroll.value;
-
-    if (!commentBox) return;
-
-    scrollComment(commentScroll.value.scrollHeight);
-};
-
 const goBack = () => {
     router.push({ name: "ThreadList", query: route.query });
 };
@@ -88,6 +113,34 @@ const goBack = () => {
 const formatDate = (date) => {
     return new Date(date).toLocaleString("ja-JP");
 };
+
+let observer = null;
+
+const createObserver = () => {
+    observer = new IntersectionObserver(
+        async ([entry]) => {
+            // 監視対象が見えているとき
+            if (entry.isIntersecting && currentPage.value < lastPage.value) {
+                await loadMoreComments();
+            }
+        },
+        {
+            // 監視対象が見えたときに発火する領域
+            root: commentScroll.value,
+            // 要素がどれくらい見えたら発火するか
+            threshold: 0.1,
+        },
+    );
+
+    // 監視の宣言
+    if (loadMoreTrigger.value) {
+        observer.observe(loadMoreTrigger.value);
+    }
+};
+
+onUnmounted(() => {
+    observer?.disconnect();
+});
 </script>
 
 <template>
@@ -122,15 +175,13 @@ const formatDate = (date) => {
             </div>
 
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-text">コメント一覧 ({{ comments.length }}件)</h3>
+                <h3 class="text-xl font-bold text-text">
+                    コメント一覧 ({{ comments.length }}件表示)
+                </h3>
 
                 <div class="flex gap-2">
                     <button class="btn-secondary text-sm" @click="scrollToTop">
                         ↑
-                    </button>
-
-                    <button class="btn-primary text-sm" @click="scrollToBottom">
-                        ↓
                     </button>
                 </div>
             </div>
@@ -160,6 +211,7 @@ const formatDate = (date) => {
                         :maxLength="maxpreviewLength"
                     />
                 </div>
+                <div ref="loadMoreTrigger" class="h-4"></div>
             </div>
 
             <div class="mt-6">

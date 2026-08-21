@@ -14,6 +14,7 @@ Route::get('/user', function (Request $request) {
 Route::get('/threads', [ThreadController::class, 'index']);
 Route::get('/threads/{thread}', [ThreadController::class, 'show']);
 Route::put('/threads/{thread}/views', [ThreadController::class, 'countUpView']);
+Route::get('/threads/{thread}/comments', [CommentController::class, 'showComments']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/user/create', [UserController::class, 'store']);
