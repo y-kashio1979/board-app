@@ -95,11 +95,6 @@ const reFetchThread = async (newComment) => {
         return;
     }
     comments.value.unshift(newComment);
-    // const loadedPage = currentPage.value;
-
-    // for (let page = 1; page <= loadedPage; page++) {
-    //     fetchComments(page);
-    // }
 };
 
 const scrollComment = (target) => {
