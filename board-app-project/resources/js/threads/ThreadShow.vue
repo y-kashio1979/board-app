@@ -95,6 +95,8 @@ const reFetchThread = async (newComment) => {
         return;
     }
     comments.value.unshift(newComment);
+
+    scrollToTop();
 };
 
 const scrollComment = (target) => {
