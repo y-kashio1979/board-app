@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 const MAX_TITLE_LENGTH = 20;
 const data = reactive({
@@ -29,22 +29,27 @@ const getThreads = async (pageNumber = 1) => {
     }
 };
 
+let timer = null;
+watch(
+    () => data.keyword,
+    () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            page.currentPage = 1;
+            getThreads(page.currentPage);
+        }, 500);
+    },
+);
+
 onMounted(() => {
     data.keyword = route.query.keyword ?? "";
     page.currentPage = route.query.page ?? 1;
     getThreads(page.currentPage);
 });
 
-//検索
-const search = () => {
-    page.currentPage = 1;
-    getThreads(page.currentPage);
-};
 //検索ワードクリア
 const wordClear = () => {
     data.keyword = "";
-    page.currentPage = 1;
-    getThreads(page.currentPage);
 };
 //タイトル字数超過時の省略
 const shortenTitle = (title) => {
@@ -85,7 +90,7 @@ const formatDate = (date) => {
                         class="form-input max-w-md"
                         placeholder="タイトルまたは投稿者名を入力"
                     />
-                    <button @click="search" class="btn-primary">検索</button>
+                    <button class="btn-primary">検索</button>
                     <button @click="wordClear" class="btn-secondary">
                         クリア
                     </button>
